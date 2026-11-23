@@ -1,14 +1,19 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { KioskHeader } from './components/KioskHeader';
 import { SlotGrid } from './components/SlotGrid';
 import { CartBar } from './components/CartBar';
+import { PaymentModal } from './components/PaymentModal';
+import { DispensingModal } from './components/DispensingModal';
+import { ClaimModal } from './components/ClaimModal';
 import { INITIAL_SLOTS } from './data/initialSlots';
-import type { CartItem, SlotItem } from './types/kiosk';
-import { playClearBeep, playClickBeep } from './utils/sound';
+import type { CartItem, CheckoutStage, SlotItem } from './types/kiosk';
+import { playClearBeep, playClickBeep, playRestockChime } from './utils/sound';
 
 export default function App() {
   const [slots, setSlots] = useState<SlotItem[]>(INITIAL_SLOTS);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [stage, setStage] = useState<CheckoutStage>('idle');
+  const [dispensedSnapshot, setDispensedSnapshot] = useState<CartItem[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const handleIncrement = (slotCode: string) => {
@@ -44,7 +49,7 @@ export default function App() {
   };
 
   const handleRestockAll = () => {
-    playClickBeep(920, 60);
+    playRestockChime();
     setSlots((prev) => prev.map((s) => ({ ...s, stock: s.default_stock })));
   };
 
@@ -86,6 +91,39 @@ export default function App() {
     [cartItems]
   );
 
+  const handleConfirmOrder = () => {
+    if (totalQuantity === 0) return;
+    playClickBeep(880, 50);
+    setStage('payment');
+  };
+
+  const handleCancelPayment = () => {
+    playClearBeep();
+    setStage('idle');
+  };
+
+  const handleDonePaying = () => {
+    setDispensedSnapshot(cartItems);
+    setStage('dispensing');
+  };
+
+  const handleDispenseComplete = useCallback(() => {
+    setSlots((prev) =>
+      prev.map((slot) => {
+        const purchased = dispensedSnapshot.find((i) => i.slot.slot_code === slot.slot_code);
+        if (!purchased) return slot;
+        return { ...slot, stock: Math.max(0, slot.stock - purchased.quantity) };
+      })
+    );
+    setStage('claim');
+  }, [dispensedSnapshot]);
+
+  const handleClaimClose = useCallback(() => {
+    setQuantities({});
+    setDispensedSnapshot([]);
+    setStage('idle');
+  }, []);
+
   return (
     <div className="h-dvh w-screen overflow-hidden flex flex-col justify-between bg-slate-50 select-none">
       <KioskHeader
@@ -96,19 +134,44 @@ export default function App() {
         onRestockAll={handleRestockAll}
         onToggleFullscreen={handleToggleFullscreen}
       />
+
       <SlotGrid
         slots={slots}
         quantities={quantities}
         onIncrement={handleIncrement}
         onDecrement={handleDecrement}
       />
+
       <CartBar
         cartItems={cartItems}
         totalQuantity={totalQuantity}
         totalAmount={totalAmount}
         onClear={handleClear}
-        onConfirm={() => playClickBeep(880, 50)}
+        onConfirm={handleConfirmOrder}
       />
+
+      {stage === 'payment' && (
+        <PaymentModal
+          cartItems={cartItems}
+          totalAmount={totalAmount}
+          onDonePaying={handleDonePaying}
+          onCancel={handleCancelPayment}
+        />
+      )}
+
+      {stage === 'dispensing' && (
+        <DispensingModal
+          cartItems={dispensedSnapshot}
+          onComplete={handleDispenseComplete}
+        />
+      )}
+
+      {stage === 'claim' && (
+        <ClaimModal
+          dispensedItems={dispensedSnapshot}
+          onClose={handleClaimClose}
+        />
+      )}
     </div>
   );
 }
