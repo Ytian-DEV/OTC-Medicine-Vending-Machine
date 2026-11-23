@@ -1,5 +1,5 @@
-import type { SlotItem } from '../types/kiosk';
-import { SlotCard } from './SlotCard';
+import type { SlotItem } from '@/types/kiosk';
+import { SlotCard } from '@/components/SlotCard';
 
 interface SlotGridProps {
   slots: SlotItem[];
@@ -15,7 +15,7 @@ export function SlotGrid({
   onDecrement,
 }: SlotGridProps) {
   return (
-    <main className="flex-1 min-h-0 p-2.5 sm:p-3.5 md:p-4 lg:p-5 grid grid-cols-3 grid-rows-3 gap-2.5 sm:gap-3 md:gap-4">
+    <main className="flex-1 min-h-0 grid grid-cols-3 grid-rows-3 gap-3 md:gap-4">
       {slots.map((slot) => (
         <SlotCard
           key={slot.slot_code}

@@ -1,21 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { SlotGrid } from './components/SlotGrid';
-import { CartBar } from './components/CartBar';
-import { PaymentModal } from './components/PaymentModal';
-import { DispensingModal } from './components/DispensingModal';
-import { ClaimModal } from './components/ClaimModal';
-import { INITIAL_SLOTS } from './data/initialSlots';
+import { SlotGrid } from '@/components/SlotGrid';
+import { CartBar } from '@/components/CartBar';
+import { CornerControls } from '@/components/CornerControls';
+import { PaymentModal } from '@/components/PaymentModal';
+import { DispensingModal } from '@/components/DispensingModal';
+import { ClaimModal } from '@/components/ClaimModal';
+import { INITIAL_SLOTS } from '@/data/initialSlots';
 import {
   completeCheckoutTransaction,
   fetchSlots,
   restockAllSlots,
-} from './lib/supabase';
-import type {
-  CartItem,
-  CheckoutStage,
-  SlotItem,
-} from './types/kiosk';
-import { playClearBeep, playClickBeep, playRestockChime } from './utils/sound';
+} from '@/lib/supabase';
+import type { CartItem, CheckoutStage, SlotItem } from '@/types/kiosk';
+import { playClearBeep, playClickBeep, playRestockChime } from '@/utils/sound';
 
 const IDLE_TIMEOUT_SECONDS = 45;
 
@@ -25,6 +22,7 @@ export default function App() {
   const [stage, setStage] = useState<CheckoutStage>('idle');
   const [dispensedSnapshot, setDispensedSnapshot] = useState<CartItem[]>([]);
   const [isRestocking, setIsRestocking] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const lastActivityRef = useRef<number>(Date.now());
   const pendingCheckoutRef = useRef<Promise<void> | null>(null);
@@ -38,6 +36,12 @@ export default function App() {
     return () => {
       active = false;
     };
+  }, []);
+
+  useEffect(() => {
+    const onFsChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener('fullscreenchange', onFsChange);
+    return () => document.removeEventListener('fullscreenchange', onFsChange);
   }, []);
 
   const cartItems: CartItem[] = useMemo(() => {
@@ -64,12 +68,15 @@ export default function App() {
     [cartItems]
   );
 
+  // 45-second idle timeout auto-reset when unconfirmed items are selected
   useEffect(() => {
     if (totalQuantity === 0 || stage !== 'idle') return;
     lastActivityRef.current = Date.now();
+
     const resetActivity = () => {
       lastActivityRef.current = Date.now();
     };
+
     const events: (keyof WindowEventMap)[] = ['pointerdown', 'touchstart', 'keydown'];
     events.forEach((evt) => window.addEventListener(evt, resetActivity, { passive: true }));
 
@@ -95,7 +102,7 @@ export default function App() {
       setQuantities((prev) => {
         const current = prev[slotCode] ?? 0;
         if (current >= target.stock) return prev;
-        playClickBeep(800, 30);
+        playClickBeep(780, 30);
         return { ...prev, [slotCode]: current + 1 };
       });
     },
@@ -106,7 +113,7 @@ export default function App() {
     setQuantities((prev) => {
       const current = prev[slotCode] ?? 0;
       if (current <= 0) return prev;
-      playClickBeep(640, 30);
+      playClickBeep(620, 30);
       const next = { ...prev };
       if (current === 1) {
         delete next[slotCode];
@@ -134,9 +141,18 @@ export default function App() {
     }
   }, [isRestocking, slots]);
 
+  const handleToggleFullscreen = useCallback(() => {
+    playClickBeep(720, 30);
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  }, []);
+
   const handleConfirmOrder = useCallback(() => {
     if (totalQuantity === 0) return;
-    playClickBeep(880, 30);
+    playClickBeep(840, 30);
     setStage('payment');
   }, [totalQuantity]);
 
@@ -173,10 +189,15 @@ export default function App() {
     setStage('idle');
   }, []);
 
-  void handleRestockAll;
-
   return (
-    <div className="h-dvh w-screen overflow-hidden flex flex-col bg-stone-100 select-none">
+    <div className="h-dvh w-screen overflow-hidden flex flex-col p-4 md:p-6 gap-4 bg-stone-100 select-none">
+      <CornerControls
+        isRestocking={isRestocking}
+        isFullscreen={isFullscreen}
+        onRestockAll={handleRestockAll}
+        onToggleFullscreen={handleToggleFullscreen}
+      />
+
       <SlotGrid
         slots={slots}
         quantities={quantities}
