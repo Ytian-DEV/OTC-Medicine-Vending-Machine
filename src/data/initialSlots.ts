@@ -3,68 +3,159 @@ import type { SlotItem } from '@/types/kiosk';
 const encodeSvg = (svg: string): string =>
   `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 
-// Quiet, minimal neutral product illustrations shown until custom photos are placed in /public/images/products/
+// Rich, studio-styled colorful product illustrations shown until custom photos are dropped into /public/images/products/
 export const PRODUCT_FALLBACK_IMAGES: Record<string, string> = {
   A1: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-      <rect x="16" y="42" width="88" height="36" rx="18" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
-      <rect x="42" y="46" width="36" height="28" rx="5" fill="#F5F5F4" stroke="#A1A1AA" stroke-width="1.75"/>
-      <circle cx="30" cy="56" r="2" fill="#71717A"/><circle cx="30" cy="64" r="2" fill="#71717A"/>
-      <circle cx="90" cy="56" r="2" fill="#71717A"/><circle cx="90" cy="64" r="2" fill="#71717A"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140" fill="none">
+      <defs>
+        <linearGradient id="ba" x1="20" y1="42" x2="140" y2="98" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#F2C894"/>
+          <stop offset="1" stop-color="#DDA262"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="80" cy="108" rx="48" ry="7" fill="#000" fill-opacity="0.06"/>
+      <g transform="rotate(-12 80 68)">
+        <rect x="18" y="44" width="124" height="48" rx="24" fill="url(#ba)" stroke="#C2813D" stroke-width="2"/>
+        <rect x="54" y="48" width="52" height="40" rx="8" fill="#FFFDF7" stroke="#E5C08D" stroke-width="1.5"/>
+        <rect x="60" y="54" width="40" height="28" rx="4" fill="#FEF3C7" fill-opacity="0.5"/>
+        <circle cx="34" cy="58" r="2.2" fill="#B57535"/><circle cx="34" cy="68" r="2.2" fill="#B57535"/><circle cx="34" cy="78" r="2.2" fill="#B57535"/>
+        <circle cx="44" cy="63" r="2.2" fill="#B57535"/><circle cx="44" cy="73" r="2.2" fill="#B57535"/>
+        <circle cx="126" cy="58" r="2.2" fill="#B57535"/><circle cx="126" cy="68" r="2.2" fill="#B57535"/><circle cx="126" cy="78" r="2.2" fill="#B57535"/>
+        <circle cx="116" cy="63" r="2.2" fill="#B57535"/><circle cx="116" cy="73" r="2.2" fill="#B57535"/>
+      </g>
     </svg>`
   ),
   A2: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-      <rect x="28" y="24" width="64" height="72" rx="12" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
-      <circle cx="47" cy="46" r="9" fill="#F5F5F4" stroke="#71717A" stroke-width="2"/>
-      <circle cx="73" cy="46" r="9" fill="#F5F5F4" stroke="#71717A" stroke-width="2"/>
-      <circle cx="47" cy="74" r="9" fill="#F5F5F4" stroke="#71717A" stroke-width="2"/>
-      <circle cx="73" cy="74" r="9" fill="#F5F5F4" stroke="#71717A" stroke-width="2"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140" fill="none">
+      <defs>
+        <linearGradient id="cet" x1="36" y1="20" x2="124" y2="112" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#E0F2FE"/>
+          <stop offset="1" stop-color="#BAE6FD"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="80" cy="122" rx="38" ry="6" fill="#000" fill-opacity="0.06"/>
+      <rect x="38" y="20" width="84" height="94" rx="14" fill="url(#cet)" stroke="#38BDF8" stroke-width="2"/>
+      <rect x="44" y="26" width="72" height="12" rx="4" fill="#0284C7" fill-opacity="0.16"/>
+      <circle cx="62" cy="56" r="13" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/>
+      <path d="M56 50C59 47 64 47 67 49" stroke="#BAE6FD" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="98" cy="56" r="13" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/>
+      <path d="M92 50C95 47 100 47 103 49" stroke="#BAE6FD" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="62" cy="90" r="13" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/>
+      <path d="M56 84C59 81 64 81 67 83" stroke="#BAE6FD" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="98" cy="90" r="13" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/>
+      <path d="M92 84C95 81 100 81 103 83" stroke="#BAE6FD" stroke-width="2.5" stroke-linecap="round"/>
     </svg>`
   ),
   A3: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-      <path d="M42 20C42 16 50 14 60 14C70 14 78 16 78 20L80 42L94 60L80 78L78 100C78 104 70 106 60 106C50 106 42 104 42 100L40 78L26 60L40 42L42 20Z" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
-      <rect x="50" y="34" width="20" height="52" rx="10" fill="#F5F5F4" stroke="#A1A1AA" stroke-width="1.75"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140" fill="none">
+      <defs>
+        <linearGradient id="rp" x1="40" y1="16" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#FDA4AF"/>
+          <stop offset="1" stop-color="#F43F5E"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="80" cy="124" rx="34" ry="6" fill="#000" fill-opacity="0.06"/>
+      <path d="M58 20C58 14 68 12 80 12C92 12 102 14 102 20L105 46L124 66L105 86L102 112C102 118 92 120 80 120C68 120 58 118 58 112L55 86L36 66L55 46L58 20Z" fill="url(#rp)" stroke="#E11D48" stroke-width="2"/>
+      <rect x="66" y="28" width="28" height="76" rx="14" fill="#FFF1F2" stroke="#FB7185" stroke-width="1.75" stroke-dasharray="4 3"/>
+      <circle cx="48" cy="66" r="4" fill="#FFF1F2" stroke="#E11D48" stroke-width="1.5"/>
+      <circle cx="112" cy="66" r="4" fill="#FFF1F2" stroke="#E11D48" stroke-width="1.5"/>
     </svg>`
   ),
   B1: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-      <rect x="20" y="38" width="80" height="44" rx="22" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
-      <path d="M60 38H78C90.15 38 100 47.85 100 60C100 72.15 90.15 82 78 82H60V38Z" fill="#E7E5E4"/>
-      <line x1="60" y1="38" x2="60" y2="82" stroke="#52525B" stroke-width="2.5"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140" fill="none">
+      <defs>
+        <linearGradient id="neo" x1="80" y1="42" x2="132" y2="94" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#34D399"/>
+          <stop offset="1" stop-color="#059669"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="80" cy="108" rx="44" ry="7" fill="#000" fill-opacity="0.06"/>
+      <g transform="rotate(-10 80 68)">
+        <rect x="24" y="42" width="112" height="52" rx="26" fill="#FFFFFF" stroke="#059669" stroke-width="2.5"/>
+        <path d="M80 42H110C124.36 42 136 53.64 136 68C136 82.36 124.36 94 110 94H80V42Z" fill="url(#neo)"/>
+        <line x1="80" y1="42" x2="80" y2="94" stroke="#047857" stroke-width="2"/>
+        <path d="M40 53H70" stroke="#D1FAE5" stroke-width="4" stroke-linecap="round"/>
+        <path d="M90 53H114" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="4" stroke-linecap="round"/>
+      </g>
     </svg>`
   ),
   B2: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-      <rect x="20" y="39" width="80" height="42" rx="21" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
-      <line x1="60" y1="45" x2="60" y2="75" stroke="#A1A1AA" stroke-width="2" stroke-dasharray="4 4"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140" fill="none">
+      <defs>
+        <linearGradient id="bio" x1="24" y1="42" x2="136" y2="94" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#FDBA74"/>
+          <stop offset="1" stop-color="#EA580C"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="80" cy="112" rx="46" ry="7" fill="#000" fill-opacity="0.06"/>
+      <rect x="28" y="24" width="104" height="82" rx="16" fill="#FFF7ED" stroke="#FDBA74" stroke-width="2"/>
+      <g transform="rotate(-8 80 65)">
+        <rect x="34" y="43" width="92" height="44" rx="22" fill="#FFFFFF" stroke="#EA580C" stroke-width="2.5"/>
+        <path d="M80 43H104C116.15 43 126 52.85 126 65C126 77.15 116.15 87 104 87H80V43Z" fill="url(#bio)"/>
+        <line x1="80" y1="46" x2="80" y2="84" stroke="#C2410C" stroke-width="2" stroke-dasharray="3 3"/>
+        <path d="M48 53H72" stroke="#FED7AA" stroke-width="3.5" stroke-linecap="round"/>
+      </g>
     </svg>`
   ),
   B3: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-      <circle cx="60" cy="60" r="34" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
-      <path d="M60 36C74 40 77 57 60 82C43 57 46 40 60 36Z" fill="#F5F5F4" stroke="#71717A" stroke-width="2"/>
-      <line x1="60" y1="44" x2="60" y2="76" stroke="#71717A" stroke-width="1.75"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140" fill="none">
+      <defs>
+        <linearGradient id="asc" x1="40" y1="24" x2="116" y2="112" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#4ADE80"/>
+          <stop offset="1" stop-color="#15803D"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="80" cy="118" rx="40" ry="6" fill="#000" fill-opacity="0.06"/>
+      <circle cx="80" cy="68" r="44" fill="#DCFCE7" stroke="#22C55E" stroke-width="2"/>
+      <path d="M80 30C103 36 108 62 80 102C52 62 57 36 80 30Z" fill="url(#asc)" stroke="#166534" stroke-width="2"/>
+      <path d="M80 40V96" stroke="#DCFCE7" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M80 58L91 49M80 72L68 62M80 78L92 69" stroke="#DCFCE7" stroke-width="2" stroke-linecap="round"/>
     </svg>`
   ),
   C1: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-      <rect x="26" y="42" width="68" height="36" rx="18" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
-      <path d="M60 42H76C85.94 42 94 50.06 94 60C94 69.94 85.94 78 76 78H60V42Z" fill="#F5F5F4" stroke="#52525B" stroke-width="2.5"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140" fill="none">
+      <defs>
+        <linearGradient id="dia" x1="80" y1="44" x2="132" y2="92" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#38BDF8"/>
+          <stop offset="1" stop-color="#0369A1"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="80" cy="108" rx="44" ry="7" fill="#000" fill-opacity="0.06"/>
+      <g transform="rotate(10 80 68)">
+        <rect x="26" y="44" width="108" height="48" rx="24" fill="#FFFFFF" stroke="#0284C7" stroke-width="2.5"/>
+        <path d="M80 44H110C123.25 44 134 54.75 134 68C134 81.25 123.25 92 110 92H80V44Z" fill="url(#dia)"/>
+        <path d="M42 54H72" stroke="#E0F2FE" stroke-width="4" stroke-linecap="round"/>
+        <path d="M90 54H116" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="4" stroke-linecap="round"/>
+      </g>
     </svg>`
   ),
   C2: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-      <rect x="38" y="18" width="44" height="84" rx="22" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
-      <rect x="48" y="30" width="24" height="60" rx="12" fill="#F5F5F4" stroke="#A1A1AA" stroke-width="1.75"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140" fill="none">
+      <defs>
+        <linearGradient id="mod" x1="48" y1="16" x2="112" y2="120" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#FCE7F3"/>
+          <stop offset="1" stop-color="#F9A8D4"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="80" cy="124" rx="32" ry="6" fill="#000" fill-opacity="0.06"/>
+      <rect x="46" y="16" width="68" height="104" rx="34" fill="url(#mod)" stroke="#EC4899" stroke-width="2"/>
+      <rect x="60" y="30" width="40" height="76" rx="20" fill="#FFFFFF" stroke="#F472B6" stroke-width="1.75"/>
+      <path d="M72 48C76 54 76 82 72 88M88 48C84 54 84 82 88 88" stroke="#F9A8D4" stroke-width="2" stroke-linecap="round"/>
     </svg>`
   ),
   C3: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
-      <path d="M38 34H82L74 76C72.5 83 67 88 60 88C53 88 47.5 83 46 76L38 34Z" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
-      <ellipse cx="60" cy="34" rx="22" ry="6" fill="#F5F5F4" stroke="#52525B" stroke-width="2.5"/>
-      <line x1="60" y1="88" x2="60" y2="104" stroke="#52525B" stroke-width="3" stroke-linecap="round"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140" fill="none">
+      <defs>
+        <linearGradient id="cup" x1="50" y1="28" x2="110" y2="100" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#FDA4AF"/>
+          <stop offset="1" stop-color="#FB7185"/>
+        </linearGradient>
+      </defs>
+      <ellipse cx="80" cy="126" rx="26" ry="5" fill="#000" fill-opacity="0.06"/>
+      <path d="M48 34H112L101 86C99 95 91 102 80 102C69 102 61 95 59 86L48 34Z" fill="url(#cup)" stroke="#E11D48" stroke-width="2"/>
+      <ellipse cx="80" cy="34" rx="32" ry="8" fill="#FFE4E6" stroke="#E11D48" stroke-width="2"/>
+      <path d="M62 48L68 82" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="4" stroke-linecap="round"/>
+      <rect x="76" y="101" width="8" height="20" rx="4" fill="#FB7185" stroke="#E11D48" stroke-width="1.75"/>
     </svg>`
   ),
 };
