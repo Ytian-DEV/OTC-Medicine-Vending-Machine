@@ -9,8 +9,8 @@ interface CornerControlsProps {
 }
 
 /**
- * Two tiny, low-contrast corner icon buttons so maintenance controls never
- * distract customers or add navbar clutter.
+ * Two tiny, low-contrast corner icon buttons placed cleanly above the top-right
+ * edge of the grid so they never overlap slot A3's stock indicator.
  */
 export function CornerControls({
   isRestocking,
@@ -19,7 +19,7 @@ export function CornerControls({
   onToggleFullscreen,
 }: CornerControlsProps) {
   return (
-    <div className="fixed top-1.5 right-2 z-30 flex items-center gap-1">
+    <div className="shrink-0 flex items-center justify-end gap-1 -my-2">
       <motion.button
         type="button"
         whileTap={{ scale: 0.92 }}
@@ -27,7 +27,7 @@ export function CornerControls({
         onClick={onRestockAll}
         title="Restock all slots"
         aria-label="Restock all slots"
-        className="h-7 w-7 rounded-full flex items-center justify-center text-zinc-400/80 hover:text-zinc-700 hover:bg-stone-200/70 transition-colors disabled:opacity-40"
+        className="h-7 w-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-700 hover:bg-stone-200/70 transition-colors disabled:opacity-40"
       >
         <RotateCcw className={`w-3.5 h-3.5 ${isRestocking ? 'animate-spin' : ''}`} />
       </motion.button>
@@ -38,7 +38,7 @@ export function CornerControls({
         onClick={onToggleFullscreen}
         title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
         aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-        className="h-7 w-7 rounded-full flex items-center justify-center text-zinc-400/80 hover:text-zinc-700 hover:bg-stone-200/70 transition-colors"
+        className="h-7 w-7 rounded-full flex items-center justify-center text-zinc-400 hover:text-zinc-700 hover:bg-stone-200/70 transition-colors"
       >
         {isFullscreen ? (
           <Minimize2 className="w-3.5 h-3.5" />

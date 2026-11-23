@@ -33,7 +33,10 @@ export function QuantityStepper({
   return (
     <div
       className={cn(
-        'inline-flex items-center rounded-full border border-stone-200 bg-stone-50 p-0.5',
+        'inline-flex items-center rounded-full border p-0.5 transition-colors',
+        isActive
+          ? 'border-zinc-900 bg-white shadow-sm'
+          : 'border-stone-200 bg-stone-50',
         className
       )}
       onClick={(e) => e.stopPropagation()}
