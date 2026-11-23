@@ -73,10 +73,10 @@ export function SlotCard({
       {/* Minimal info + Origin UI pill stepper */}
       <div className="shrink-0 landscape:lg:flex-1 landscape:lg:h-full flex flex-col items-center landscape:lg:items-start justify-center landscape:lg:justify-between gap-2 sm:gap-2.5 min-w-0 landscape:lg:py-1">
         <div className="w-full text-center landscape:lg:text-left min-w-0">
-          <h2 className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-zinc-900 tracking-tight leading-snug truncate">
+          <h2 className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-semibold text-zinc-900 tracking-tight leading-snug truncate">
             {slot.name}
           </h2>
-          <p className="text-xs sm:text-sm md:text-base text-zinc-500 font-normal mt-0.5 tabular-nums">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-zinc-600 font-medium mt-1 tabular-nums">
             {formatPHP(slot.price)}
           </p>
         </div>
