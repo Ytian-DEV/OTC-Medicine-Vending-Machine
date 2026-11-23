@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { KioskHeader } from './components/KioskHeader';
 import { SlotGrid } from './components/SlotGrid';
 import { CartBar } from './components/CartBar';
 import { PaymentModal } from './components/PaymentModal';
@@ -14,7 +13,6 @@ import {
 import type {
   CartItem,
   CheckoutStage,
-  ConnectionStatus,
   SlotItem,
 } from './types/kiosk';
 import { playClearBeep, playClickBeep, playRestockChime } from './utils/sound';
@@ -26,34 +24,20 @@ export default function App() {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [stage, setStage] = useState<CheckoutStage>('idle');
   const [dispensedSnapshot, setDispensedSnapshot] = useState<CartItem[]>([]);
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('loading');
   const [isRestocking, setIsRestocking] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [idleSecondsLeft, setIdleSecondsLeft] = useState<number | null>(null);
 
   const lastActivityRef = useRef<number>(Date.now());
   const pendingCheckoutRef = useRef<Promise<void> | null>(null);
 
-  // Load initial 9 slots from Supabase (gracefully falling back to LocalStorage)
   useEffect(() => {
     let active = true;
-    fetchSlots().then(({ slots: loaded, connected }) => {
+    fetchSlots().then(({ slots: loaded }) => {
       if (!active) return;
       setSlots(loaded);
-      setConnectionStatus(connected ? 'connected' : 'offline');
     });
     return () => {
       active = false;
     };
-  }, []);
-
-  // Track browser fullscreen changes (including Esc key)
-  useEffect(() => {
-    const onFsChange = () => {
-      setIsFullscreen(Boolean(document.fullscreenElement));
-    };
-    document.addEventListener('fullscreenchange', onFsChange);
-    return () => document.removeEventListener('fullscreenchange', onFsChange);
   }, []);
 
   const cartItems: CartItem[] = useMemo(() => {
@@ -80,33 +64,20 @@ export default function App() {
     [cartItems]
   );
 
-  // 45-second idle timeout auto-reset when items are selected and no modal is open
   useEffect(() => {
-    if (totalQuantity === 0 || stage !== 'idle') {
-      setIdleSecondsLeft(null);
-      return;
-    }
-
+    if (totalQuantity === 0 || stage !== 'idle') return;
     lastActivityRef.current = Date.now();
-    setIdleSecondsLeft(IDLE_TIMEOUT_SECONDS);
-
     const resetActivity = () => {
       lastActivityRef.current = Date.now();
-      setIdleSecondsLeft(IDLE_TIMEOUT_SECONDS);
     };
-
     const events: (keyof WindowEventMap)[] = ['pointerdown', 'touchstart', 'keydown'];
     events.forEach((evt) => window.addEventListener(evt, resetActivity, { passive: true }));
 
     const interval = window.setInterval(() => {
       const elapsedSec = Math.floor((Date.now() - lastActivityRef.current) / 1000);
-      const remaining = Math.max(0, IDLE_TIMEOUT_SECONDS - elapsedSec);
-      setIdleSecondsLeft(remaining);
-
-      if (remaining === 0) {
+      if (elapsedSec >= IDLE_TIMEOUT_SECONDS) {
         playClearBeep();
         setQuantities({});
-        setIdleSecondsLeft(null);
       }
     }, 1000);
 
@@ -124,7 +95,7 @@ export default function App() {
       setQuantities((prev) => {
         const current = prev[slotCode] ?? 0;
         if (current >= target.stock) return prev;
-        playClickBeep(800, 40);
+        playClickBeep(800, 30);
         return { ...prev, [slotCode]: current + 1 };
       });
     },
@@ -135,7 +106,7 @@ export default function App() {
     setQuantities((prev) => {
       const current = prev[slotCode] ?? 0;
       if (current <= 0) return prev;
-      playClickBeep(640, 35);
+      playClickBeep(640, 30);
       const next = { ...prev };
       if (current === 1) {
         delete next[slotCode];
@@ -155,47 +126,32 @@ export default function App() {
     if (isRestocking) return;
     setIsRestocking(true);
     try {
-      const { slots: restocked, connected } = await restockAllSlots(slots);
+      const { slots: restocked } = await restockAllSlots(slots);
       setSlots(restocked);
-      setConnectionStatus(connected ? 'connected' : 'offline');
       playRestockChime();
     } finally {
       setIsRestocking(false);
     }
   }, [isRestocking, slots]);
 
-  const handleToggleFullscreen = useCallback(() => {
-    playClickBeep(760, 40);
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {
-        // Fullscreen may be blocked in some embedded contexts
-      });
-    } else {
-      document.exitFullscreen().catch(() => {});
-    }
-  }, []);
-
   const handleConfirmOrder = useCallback(() => {
     if (totalQuantity === 0) return;
-    playClickBeep(880, 50);
+    playClickBeep(880, 30);
     setStage('payment');
   }, [totalQuantity]);
 
   const handleCancelPayment = useCallback(() => {
-    playClearBeep();
     setStage('idle');
   }, []);
 
-  // Simultaneously kick off 3-second dispensing beep + Supabase stock deduction & transaction log
   const handleDonePaying = useCallback(() => {
     const snapshot = cartItems;
     setDispensedSnapshot(snapshot);
     setStage('dispensing');
 
     pendingCheckoutRef.current = completeCheckoutTransaction(snapshot, slots).then(
-      ({ slots: updatedSlots, connected }) => {
+      ({ slots: updatedSlots }) => {
         setSlots(updatedSlots);
-        setConnectionStatus(connected ? 'connected' : 'offline');
       }
     );
   }, [cartItems, slots]);
@@ -217,17 +173,10 @@ export default function App() {
     setStage('idle');
   }, []);
 
-  return (
-    <div className="h-dvh w-screen overflow-hidden flex flex-col justify-between bg-slate-50 select-none">
-      <KioskHeader
-        connectionStatus={connectionStatus}
-        idleSecondsLeft={idleSecondsLeft}
-        isRestocking={isRestocking}
-        isFullscreen={isFullscreen}
-        onRestockAll={handleRestockAll}
-        onToggleFullscreen={handleToggleFullscreen}
-      />
+  void handleRestockAll;
 
+  return (
+    <div className="h-dvh w-screen overflow-hidden flex flex-col bg-stone-100 select-none">
       <SlotGrid
         slots={slots}
         quantities={quantities}
