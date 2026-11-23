@@ -1,80 +1,70 @@
-import type { SlotItem } from '../types/kiosk';
+import type { SlotItem } from '@/types/kiosk';
 
 const encodeSvg = (svg: string): string =>
   `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 
+// Quiet, minimal neutral product illustrations shown until custom photos are placed in /public/images/products/
 export const PRODUCT_FALLBACK_IMAGES: Record<string, string> = {
   A1: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
-      <rect width="160" height="120" rx="16" fill="#F0F9FF"/>
-      <rect x="26" y="38" width="108" height="44" rx="22" fill="#FDE68A" stroke="#D97706" stroke-width="3.5"/>
-      <rect x="58" y="42" width="44" height="36" rx="6" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2.5"/>
-      <circle cx="42" cy="54" r="3" fill="#B45309"/><circle cx="42" cy="66" r="3" fill="#B45309"/>
-      <circle cx="118" cy="54" r="3" fill="#B45309"/><circle cx="118" cy="66" r="3" fill="#B45309"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+      <rect x="16" y="42" width="88" height="36" rx="18" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
+      <rect x="42" y="46" width="36" height="28" rx="5" fill="#F5F5F4" stroke="#A1A1AA" stroke-width="1.75"/>
+      <circle cx="30" cy="56" r="2" fill="#71717A"/><circle cx="30" cy="64" r="2" fill="#71717A"/>
+      <circle cx="90" cy="56" r="2" fill="#71717A"/><circle cx="90" cy="64" r="2" fill="#71717A"/>
     </svg>`
   ),
   A2: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
-      <rect width="160" height="120" rx="16" fill="#F0F9FF"/>
-      <rect x="44" y="20" width="72" height="80" rx="14" fill="#E0F2FE" stroke="#0284C7" stroke-width="3.5"/>
-      <circle cx="65" cy="43" r="10" fill="#FFFFFF" stroke="#0284C7" stroke-width="3"/>
-      <circle cx="95" cy="43" r="10" fill="#FFFFFF" stroke="#0284C7" stroke-width="3"/>
-      <circle cx="65" cy="75" r="10" fill="#FFFFFF" stroke="#0284C7" stroke-width="3"/>
-      <circle cx="95" cy="75" r="10" fill="#FFFFFF" stroke="#0284C7" stroke-width="3"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+      <rect x="28" y="24" width="64" height="72" rx="12" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
+      <circle cx="47" cy="46" r="9" fill="#F5F5F4" stroke="#71717A" stroke-width="2"/>
+      <circle cx="73" cy="46" r="9" fill="#F5F5F4" stroke="#71717A" stroke-width="2"/>
+      <circle cx="47" cy="74" r="9" fill="#F5F5F4" stroke="#71717A" stroke-width="2"/>
+      <circle cx="73" cy="74" r="9" fill="#F5F5F4" stroke="#71717A" stroke-width="2"/>
     </svg>`
   ),
   A3: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
-      <rect width="160" height="120" rx="16" fill="#FFF1F2"/>
-      <path d="M58 18C58 13 67 11 80 11C93 11 102 13 102 18L105 42L120 60L105 78L102 102C102 107 93 109 80 109C67 109 58 107 58 102L55 78L40 60L55 42L58 18Z" fill="#FFE4E6" stroke="#F43F5E" stroke-width="3.5"/>
-      <rect x="68" y="30" width="24" height="60" rx="12" fill="#FECDD3" stroke="#FB7185" stroke-width="2.5"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+      <path d="M42 20C42 16 50 14 60 14C70 14 78 16 78 20L80 42L94 60L80 78L78 100C78 104 70 106 60 106C50 106 42 104 42 100L40 78L26 60L40 42L42 20Z" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
+      <rect x="50" y="34" width="20" height="52" rx="10" fill="#F5F5F4" stroke="#A1A1AA" stroke-width="1.75"/>
     </svg>`
   ),
   B1: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
-      <rect width="160" height="120" rx="16" fill="#F0F9FF"/>
-      <rect x="34" y="36" width="92" height="48" rx="24" fill="#CCFBF1" stroke="#0D9488" stroke-width="3.5"/>
-      <path d="M80 36H102C115.255 36 126 46.745 126 60C126 73.255 115.255 84 102 84H80V36Z" fill="#0D9488" fill-opacity="0.25"/>
-      <line x1="80" y1="36" x2="80" y2="84" stroke="#0D9488" stroke-width="3"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+      <rect x="20" y="38" width="80" height="44" rx="22" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
+      <path d="M60 38H78C90.15 38 100 47.85 100 60C100 72.15 90.15 82 78 82H60V38Z" fill="#E7E5E4"/>
+      <line x1="60" y1="38" x2="60" y2="82" stroke="#52525B" stroke-width="2.5"/>
     </svg>`
   ),
   B2: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
-      <rect width="160" height="120" rx="16" fill="#F0F9FF"/>
-      <rect x="34" y="36" width="92" height="48" rx="24" fill="#FEF3C7" stroke="#0D9488" stroke-width="3.5"/>
-      <line x1="80" y1="42" x2="80" y2="78" stroke="#0D9488" stroke-width="3" stroke-dasharray="5 4"/>
-      <circle cx="58" cy="60" r="7" fill="#0D9488"/>
-      <circle cx="102" cy="60" r="7" fill="#F59E0B"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+      <rect x="20" y="39" width="80" height="42" rx="21" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
+      <line x1="60" y1="45" x2="60" y2="75" stroke="#A1A1AA" stroke-width="2" stroke-dasharray="4 4"/>
     </svg>`
   ),
   B3: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
-      <rect width="160" height="120" rx="16" fill="#ECFDF5"/>
-      <circle cx="80" cy="60" r="38" fill="#D1FAE5" stroke="#10B981" stroke-width="3.5"/>
-      <path d="M80 34C96 38 100 56 80 86C60 56 64 38 80 34Z" fill="#34D399" stroke="#059669" stroke-width="3"/>
-      <line x1="80" y1="42" x2="80" y2="80" stroke="#065F46" stroke-width="2.5"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+      <circle cx="60" cy="60" r="34" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
+      <path d="M60 36C74 40 77 57 60 82C43 57 46 40 60 36Z" fill="#F5F5F4" stroke="#71717A" stroke-width="2"/>
+      <line x1="60" y1="44" x2="60" y2="76" stroke="#71717A" stroke-width="1.75"/>
     </svg>`
   ),
   C1: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
-      <rect width="160" height="120" rx="16" fill="#F0F9FF"/>
-      <rect x="38" y="40" width="84" height="40" rx="20" fill="#FFFFFF" stroke="#0284C7" stroke-width="3.5"/>
-      <path d="M80 40H102C113.046 40 122 48.954 122 60C122 71.046 113.046 80 102 80H80V40Z" fill="#38BDF8"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+      <rect x="26" y="42" width="68" height="36" rx="18" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
+      <path d="M60 42H76C85.94 42 94 50.06 94 60C94 69.94 85.94 78 76 78H60V42Z" fill="#F5F5F4" stroke="#52525B" stroke-width="2.5"/>
     </svg>`
   ),
   C2: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
-      <rect width="160" height="120" rx="16" fill="#FFF1F2"/>
-      <rect x="54" y="16" width="52" height="88" rx="26" fill="#FFE4E6" stroke="#F43F5E" stroke-width="3.5"/>
-      <rect x="66" y="28" width="28" height="64" rx="14" fill="#FECDD3" stroke="#FB7185" stroke-width="2.5"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+      <rect x="38" y="18" width="44" height="84" rx="22" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
+      <rect x="48" y="30" width="24" height="60" rx="12" fill="#F5F5F4" stroke="#A1A1AA" stroke-width="1.75"/>
     </svg>`
   ),
   C3: encodeSvg(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
-      <rect width="160" height="120" rx="16" fill="#FFF1F2"/>
-      <path d="M56 30H104L95 74C93.5 82 88 88 80 88C72 88 66.5 82 65 74L56 30Z" fill="#FFE4E6" stroke="#F43F5E" stroke-width="3.5"/>
-      <ellipse cx="80" cy="30" rx="24" ry="7" fill="#FECDD3" stroke="#F43F5E" stroke-width="3.5"/>
-      <line x1="80" y1="88" x2="80" y2="104" stroke="#F43F5E" stroke-width="4.5" stroke-linecap="round"/>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+      <path d="M38 34H82L74 76C72.5 83 67 88 60 88C53 88 47.5 83 46 76L38 34Z" fill="#FFFFFF" stroke="#52525B" stroke-width="2.5"/>
+      <ellipse cx="60" cy="34" rx="22" ry="6" fill="#F5F5F4" stroke="#52525B" stroke-width="2.5"/>
+      <line x1="60" y1="88" x2="60" y2="104" stroke="#52525B" stroke-width="3" stroke-linecap="round"/>
     </svg>`
   ),
 };
@@ -88,9 +78,7 @@ export const INITIAL_SLOTS: SlotItem[] = [
     id: 'local-a1',
     slot_code: 'A1',
     name: 'Band-Aid',
-    category: 'First Aid',
-    unit_label: 'Per strip',
-    price: 5.0,
+    price: 5,
     stock: 15,
     default_stock: 15,
     image_url: '/images/products/band-aid.jpg',
@@ -99,10 +87,8 @@ export const INITIAL_SLOTS: SlotItem[] = [
   {
     id: 'local-a2',
     slot_code: 'A2',
-    name: 'Cetirizine (10mg)',
-    category: 'Medicine',
-    unit_label: 'Per tablet',
-    price: 15.0,
+    name: 'Cetirizine',
+    price: 15,
     stock: 12,
     default_stock: 12,
     image_url: '/images/products/cetirizine.jpg',
@@ -111,22 +97,18 @@ export const INITIAL_SLOTS: SlotItem[] = [
   {
     id: 'local-a3',
     slot_code: 'A3',
-    name: 'Reusable Pad',
-    category: 'Hygiene',
-    unit_label: 'Per piece',
-    price: 120.0,
+    name: 'Reusable Pads',
+    price: 120,
     stock: 8,
     default_stock: 8,
-    image_url: '/images/products/reusable-pad.jpg',
+    image_url: '/images/products/reusable-pads.jpg',
     sort_order: 3,
   },
   {
     id: 'local-b1',
     slot_code: 'B1',
-    name: 'Neozep Z+',
-    category: 'Medicine',
-    unit_label: 'Per tablet',
-    price: 9.0,
+    name: 'Neozep',
+    price: 9,
     stock: 15,
     default_stock: 15,
     image_url: '/images/products/neozep.jpg',
@@ -135,10 +117,8 @@ export const INITIAL_SLOTS: SlotItem[] = [
   {
     id: 'local-b2',
     slot_code: 'B2',
-    name: 'Biogesic (500mg)',
-    category: 'Medicine',
-    unit_label: 'Per tablet',
-    price: 6.0,
+    name: 'Biogesic',
+    price: 6,
     stock: 20,
     default_stock: 20,
     image_url: '/images/products/biogesic.jpg',
@@ -147,10 +127,8 @@ export const INITIAL_SLOTS: SlotItem[] = [
   {
     id: 'local-b3',
     slot_code: 'B3',
-    name: 'Ascof Forte (600mg)',
-    category: 'Medicine',
-    unit_label: 'Per tablet',
-    price: 9.0,
+    name: 'Ascof Forte',
+    price: 9,
     stock: 15,
     default_stock: 15,
     image_url: '/images/products/ascof-forte.jpg',
@@ -159,10 +137,8 @@ export const INITIAL_SLOTS: SlotItem[] = [
   {
     id: 'local-c1',
     slot_code: 'C1',
-    name: 'Diatabs (2mg)',
-    category: 'Medicine',
-    unit_label: 'Per capsule',
-    price: 10.0,
+    name: 'Diatabs',
+    price: 10,
     stock: 12,
     default_stock: 12,
     image_url: '/images/products/diatabs.jpg',
@@ -172,9 +148,7 @@ export const INITIAL_SLOTS: SlotItem[] = [
     id: 'local-c2',
     slot_code: 'C2',
     name: 'Modess Napkin',
-    category: 'Hygiene',
-    unit_label: 'Per single pad',
-    price: 8.0,
+    price: 8,
     stock: 15,
     default_stock: 15,
     image_url: '/images/products/modess-napkin.jpg',
@@ -184,9 +158,7 @@ export const INITIAL_SLOTS: SlotItem[] = [
     id: 'local-c3',
     slot_code: 'C3',
     name: 'Menstrual Cup',
-    category: 'Hygiene',
-    unit_label: 'Per piece',
-    price: 350.0,
+    price: 350,
     stock: 5,
     default_stock: 5,
     image_url: '/images/products/menstrual-cup.jpg',
@@ -195,5 +167,5 @@ export const INITIAL_SLOTS: SlotItem[] = [
 ];
 
 export function formatPHP(amount: number): string {
-  return `₱${amount.toFixed(2)}`;
+  return Number.isInteger(amount) ? `₱${amount}` : `₱${amount.toFixed(2)}`;
 }

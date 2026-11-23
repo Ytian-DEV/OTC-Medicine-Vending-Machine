@@ -1,43 +1,42 @@
-# CareVend PH — Health, Hygiene & First-Aid Touchscreen Vending Kiosk
+# Minimal Touchscreen Vending Machine Display
 
-Interactive touchscreen vending machine display web application prototype for over-the-counter (OTC) medicines, first-aid, and feminine hygiene essentials in the Philippines.
+A quiet, human-designed touchscreen kiosk prototype for 9 over-the-counter health and hygiene essentials in the Philippines. Built with a calm neutral aesthetic (warm stone `#F5F5F4`, pure white `rounded-2xl` cards, deep charcoal `#18181B`) and zero dashboard clutter.
 
-## Tech Stack
-- **Frontend:** React 18 + TypeScript + Vite + Tailwind CSS + Lucide Icons
-- **Audio:** Native Web Audio API (`AudioContext` oscillator synthesis — touch clicks & 3-second dispensing beep with zero external audio dependencies)
-- **Backend / Database:** Supabase (`@supabase/supabase-js`) with automatic Offline LocalStorage fallback
-- **Deployment:** Vercel-ready (`npm run build` runs `tsc -b && vite build`)
+## Stack
+- **React 18 + TypeScript + Vite + Tailwind CSS**
+- **shadcn/ui** (`Button`, `Dialog`, `Progress`)
+- **Origin UI** grouped pill quantity stepper
+- **`@number-flow/react`** smooth animated quantities and `₱` totals
+- **`motion`** subtle press feedback (`whileTap={{ scale: 0.95 }}`) and claim animation
+- **Web Audio API** synthesized 30ms touch clicks and exact 3-second dispensing beep
+- **Supabase** (`@supabase/supabase-js`) with automatic LocalStorage fallback
 
-## 9 Seeded Vending Slots (3×3 Grid)
-| Slot | Product | Category | Unit | Price (PHP) | Default Stock |
-| :--- | :--- | :--- | :--- | ---: | ---: |
-| A1 | Band-Aid | First Aid | Per strip | ₱5.00 | 15 |
-| A2 | Cetirizine (10mg) | Medicine | Per tablet | ₱15.00 | 12 |
-| A3 | Reusable Pad | Hygiene | Per piece | ₱120.00 | 8 |
-| B1 | Neozep Z+ | Medicine | Per tablet | ₱9.00 | 15 |
-| B2 | Biogesic (500mg) | Medicine | Per tablet | ₱6.00 | 20 |
-| B3 | Ascof Forte (600mg) | Medicine | Per tablet | ₱9.00 | 15 |
-| C1 | Diatabs (2mg) | Medicine | Per capsule | ₱10.00 | 12 |
-| C2 | Modess Napkin | Hygiene | Per single pad | ₱8.00 | 15 |
-| C3 | Menstrual Cup | Hygiene | Per piece | ₱350.00 | 5 |
+## The 9 Products (3×3 Grid)
+| Slot | Product | Price | Stock | Photo Path |
+| :--- | :--- | ---: | ---: | :--- |
+| A1 | Band-Aid | ₱5 | 15 | `/images/products/band-aid.jpg` |
+| A2 | Cetirizine | ₱15 | 12 | `/images/products/cetirizine.jpg` |
+| A3 | Reusable Pads | ₱120 | 8 | `/images/products/reusable-pads.jpg` |
+| B1 | Neozep | ₱9 | 15 | `/images/products/neozep.jpg` |
+| B2 | Biogesic | ₱6 | 20 | `/images/products/biogesic.jpg` |
+| B3 | Ascof Forte | ₱9 | 15 | `/images/products/ascof-forte.jpg` |
+| C1 | Diatabs | ₱10 | 12 | `/images/products/diatabs.jpg` |
+| C2 | Modess Napkin | ₱8 | 15 | `/images/products/modess-napkin.jpg` |
+| C3 | Menstrual Cup | ₱350 | 5 | `/images/products/menstrual-cup.jpg` |
 
-## Local Setup & Supabase Configuration
+## Setup & Deployment
 
-1. Install dependencies and run locally:
+1. Run locally (works out-of-the-box with LocalStorage fallback):
    ```bash
    npm install
    npm run dev
    ```
-   Without environment variables, CareVend PH automatically starts in **Offline Mode** backed by `localStorage`.
 
 2. Connect Supabase:
-   - Open your Supabase project → **SQL Editor**.
-   - Paste and run [`supabase/schema.sql`](./supabase/schema.sql) to create `public.slots`, `public.transactions`, RLS policies, seed data, and `restock_all_slots()`.
-   - Copy `.env.example` to `.env.local` (or add these variables in Vercel Project Settings):
-     ```env
-     VITE_SUPABASE_URL=https://your-project-ref.supabase.co
-     VITE_SUPABASE_ANON_KEY=your-supabase-anon-public-key
-     ```
+   - Paste and run [`supabase/schema.sql`](./supabase/schema.sql) in the Supabase SQL Editor.
+   - Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to `.env.local` (or Vercel Environment Variables).
 
-3. Custom Product Photos:
-   - Drop product images into `public/images/products/` (e.g., `band-aid.jpg`, `biogesic.jpg`, etc.). Built-in medical/hygiene SVG illustrations automatically display as fallbacks whenever a custom photo is not yet present.
+3. Verify Vercel production build:
+   ```bash
+   npm run build
+   ```

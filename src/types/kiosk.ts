@@ -1,11 +1,13 @@
 export type SlotCategory = 'First Aid' | 'Medicine' | 'Hygiene';
 
+export type ConnectionStatus = 'connected' | 'offline' | 'loading';
+
 export interface SlotItem {
   id: string;
   slot_code: string;
   name: string;
-  category: SlotCategory;
-  unit_label: string;
+  category?: SlotCategory;
+  unit_label?: string;
   price: number;
   stock: number;
   default_stock: number;
@@ -21,8 +23,6 @@ export interface CartItem {
 }
 
 export type CheckoutStage = 'idle' | 'payment' | 'dispensing' | 'claim';
-
-export type ConnectionStatus = 'connected' | 'offline' | 'loading';
 
 export interface TransactionLineItem {
   slot_code: string;
