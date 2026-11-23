@@ -1,9 +1,9 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { INITIAL_SLOTS } from '../data/initialSlots';
-import type { CartItem, SlotCategory, SlotItem, TransactionLineItem } from '../types/kiosk';
+import { INITIAL_SLOTS } from '@/data/initialSlots';
+import type { CartItem, SlotItem, TransactionLineItem } from '@/types/kiosk';
 
-const LOCAL_SLOTS_KEY = 'carevend_ph_slots_v1';
-const LOCAL_TXNS_KEY = 'carevend_ph_transactions_v1';
+const LOCAL_SLOTS_KEY = 'vending_kiosk_slots_v2';
+const LOCAL_TXNS_KEY = 'vending_kiosk_transactions_v2';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
@@ -14,7 +14,7 @@ if (supabaseUrl && supabaseAnonKey) {
   supabase = createClient(supabaseUrl, supabaseAnonKey);
 } else {
   console.warn(
-    '[CareVend PH] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not set. Running in Offline Prototype Mode with LocalStorage persistence.'
+    '[Vending Kiosk] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing. Running with LocalStorage fallback.'
   );
 }
 
@@ -25,8 +25,6 @@ function normalizeSlot(row: Record<string, unknown>): SlotItem {
     id: String(row.id ?? row.slot_code),
     slot_code: String(row.slot_code),
     name: String(row.name),
-    category: (row.category as SlotCategory) ?? 'Medicine',
-    unit_label: String(row.unit_label ?? ''),
     price: Number(row.price ?? 0),
     stock: Math.max(0, Number(row.stock ?? 0)),
     default_stock: Math.max(0, Number(row.default_stock ?? 10)),
@@ -88,7 +86,7 @@ export async function fetchSlots(): Promise<{ slots: SlotItem[]; connected: bool
 
     if (error || !data || data.length === 0) {
       if (error) {
-        console.warn('[CareVend PH] Supabase fetchSlots failed, using local fallback:', error.message);
+        console.warn('[Vending Kiosk] Supabase fetchSlots failed, using local fallback:', error.message);
       }
       return { slots: readLocalSlots(), connected: false };
     }
@@ -97,7 +95,7 @@ export async function fetchSlots(): Promise<{ slots: SlotItem[]; connected: bool
     writeLocalSlots(normalized);
     return { slots: normalized, connected: true };
   } catch (err) {
-    console.warn('[CareVend PH] Supabase unreachable, falling back to local state:', err);
+    console.warn('[Vending Kiosk] Supabase unreachable, using local fallback:', err);
     return { slots: readLocalSlots(), connected: false };
   }
 }
@@ -117,7 +115,6 @@ export async function completeCheckoutTransaction(
   const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const totalAmount = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
 
-  // Optimistic / local deduction result
   const locallyUpdatedSlots = currentSlots.map((slot) => {
     const purchased = cartItems.find((c) => c.slot.slot_code === slot.slot_code);
     if (!purchased) return slot;
@@ -139,7 +136,6 @@ export async function completeCheckoutTransaction(
   }
 
   try {
-    // 1. Insert transaction log
     const { error: txError } = await supabase.from('transactions').insert({
       items: lineItems,
       total_quantity: totalQuantity,
@@ -147,25 +143,30 @@ export async function completeCheckoutTransaction(
     });
 
     if (txError) {
-      console.warn('[CareVend PH] Failed to insert transaction:', txError.message);
+      console.warn('[Vending Kiosk] Failed to insert transaction:', txError.message);
     }
 
-    // 2. Deduct purchased stock from each slot in Supabase
     await Promise.all(
       cartItems.map(async ({ slot, quantity }) => {
-        const nextStock = Math.max(0, slot.stock - quantity);
-        const { error: updateErr } = await supabase!
-          .from('slots')
-          .update({ stock: nextStock, updated_at: new Date().toISOString() })
-          .eq('slot_code', slot.slot_code);
+        const { error: rpcErr } = await supabase!.rpc('deduct_slot_stock', {
+          p_slot_code: slot.slot_code,
+          p_qty: quantity,
+        });
 
-        if (updateErr) {
-          console.warn(`[CareVend PH] Failed to update slot ${slot.slot_code}:`, updateErr.message);
+        if (rpcErr) {
+          const nextStock = Math.max(0, slot.stock - quantity);
+          const { error: updateErr } = await supabase!
+            .from('slots')
+            .update({ stock: nextStock, updated_at: new Date().toISOString() })
+            .eq('slot_code', slot.slot_code);
+
+          if (updateErr) {
+            console.warn(`[Vending Kiosk] Failed to update slot ${slot.slot_code}:`, updateErr.message);
+          }
         }
       })
     );
 
-    // 3. Re-fetch authoritative slot counts
     const refreshed = await fetchSlots();
     if (refreshed.connected) {
       return refreshed;
@@ -174,7 +175,7 @@ export async function completeCheckoutTransaction(
     writeLocalSlots(locallyUpdatedSlots);
     return { slots: locallyUpdatedSlots, connected: false };
   } catch (err) {
-    console.warn('[CareVend PH] Checkout sync failed, applied locally:', err);
+    console.warn('[Vending Kiosk] Checkout sync failed, applied locally:', err);
     writeLocalSlots(locallyUpdatedSlots);
     appendLocalTransaction({
       items: lineItems,
@@ -210,7 +211,6 @@ export async function restockAllSlots(
       return { slots: normalized, connected: true };
     }
 
-    // Fallback to row-by-row updates if RPC hasn't been installed yet
     await Promise.all(
       locallyRestocked.map((slot) =>
         supabase!
@@ -226,7 +226,7 @@ export async function restockAllSlots(
     writeLocalSlots(locallyRestocked);
     return { slots: locallyRestocked, connected: false };
   } catch (err) {
-    console.warn('[CareVend PH] Restock sync failed, restocked locally:', err);
+    console.warn('[Vending Kiosk] Restock sync failed, restocked locally:', err);
     writeLocalSlots(locallyRestocked);
     return { slots: locallyRestocked, connected: false };
   }
