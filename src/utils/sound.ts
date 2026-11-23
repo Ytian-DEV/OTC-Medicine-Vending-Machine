@@ -1,4 +1,4 @@
-// Web Audio API synthesized sound effects — zero external MP3 dependencies
+// Web Audio API synthesized sound effects — zero external audio dependencies
 
 let sharedAudioCtx: AudioContext | null = null;
 
@@ -14,16 +14,16 @@ function getAudioContext(): AudioContext | null {
   }
   if (sharedAudioCtx.state === 'suspended') {
     sharedAudioCtx.resume().catch(() => {
-      // Ignore autoplay resume errors until user interaction
+      // Ignore autoplay resume errors until next user gesture
     });
   }
   return sharedAudioCtx;
 }
 
 /**
- * Short tactile touch-click beep (800Hz, 40ms) for +, -, card taps, and Confirm.
+ * Subtle, soft 30ms touch click for +, -, and Confirm interactions.
  */
-export function playClickBeep(frequency = 800, durationMs = 40): void {
+export function playClickBeep(frequency = 780, durationMs = 30): void {
   const ctx = getAudioContext();
   if (!ctx) return;
 
@@ -36,7 +36,7 @@ export function playClickBeep(frequency = 800, durationMs = 40): void {
     osc.frequency.setValueAtTime(frequency, now);
 
     gain.gain.setValueAtTime(0.001, now);
-    gain.gain.exponentialRampToValueAtTime(0.14, now + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.09, now + 0.004);
     gain.gain.exponentialRampToValueAtTime(0.001, now + durationMs / 1000);
 
     osc.connect(gain);
@@ -50,7 +50,7 @@ export function playClickBeep(frequency = 800, durationMs = 40): void {
 }
 
 /**
- * Subtle downward tone for Clear / Reset actions.
+ * Quiet downward tone for Clear / idle auto-reset.
  */
 export function playClearBeep(): void {
   const ctx = getAudioContext();
@@ -61,67 +61,57 @@ export function playClearBeep(): void {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(520, now);
-    osc.frequency.exponentialRampToValueAtTime(340, now + 0.09);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(500, now);
+    osc.frequency.exponentialRampToValueAtTime(340, now + 0.07);
 
-    gain.gain.setValueAtTime(0.12, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
 
     osc.start(now);
-    osc.stop(now + 0.11);
+    osc.stop(now + 0.09);
   } catch {
     // Ignore audio errors
   }
 }
 
 /**
- * Unmistakable 3-second vending machine dispensing notification beep (880Hz pulsing pattern over 3.0s).
- * Returns a stop() cleanup callback to halt audio cleanly on unmount.
+ * Clear 3-second (3,000ms) vending machine dispensing beep via Web Audio API.
+ * Returns a cleanup callback to stop playback cleanly on unmount.
  */
 export function playThreeSecondBeep(): () => void {
   const ctx = getAudioContext();
   if (!ctx) return () => {};
 
-  const activeNodes: OscillatorNode[] = [];
+  const oscNodes: OscillatorNode[] = [];
   const gainNodes: GainNode[] = [];
 
   try {
     const startTime = ctx.currentTime;
-    const totalDuration = 3.0;
+    const durationSec = 3.0;
 
-    // Schedule 6 crisp 0.42s pulses across 3.0 seconds (0.5s cycle) at 880Hz
-    // so it reads as an unmistakable 3-second vending machine dispensing beep.
-    const pulseCount = 6;
-    const pulseStep = totalDuration / pulseCount; // 0.5s
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
 
-    for (let i = 0; i < pulseCount; i++) {
-      const pulseStart = startTime + i * pulseStep;
-      const pulseDuration = i === pulseCount - 1 ? 0.46 : 0.36;
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, startTime);
 
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.001, startTime);
+    gain.gain.linearRampToValueAtTime(0.14, startTime + 0.03);
+    gain.gain.setValueAtTime(0.14, startTime + durationSec - 0.06);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + durationSec);
 
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(i === pulseCount - 1 ? 1046.5 : 880, pulseStart);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
 
-      gain.gain.setValueAtTime(0.001, pulseStart);
-      gain.gain.linearRampToValueAtTime(0.18, pulseStart + 0.02);
-      gain.gain.setValueAtTime(0.18, pulseStart + pulseDuration - 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.001, pulseStart + pulseDuration);
+    osc.start(startTime);
+    osc.stop(startTime + durationSec + 0.02);
 
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc.start(pulseStart);
-      osc.stop(pulseStart + pulseDuration + 0.02);
-
-      activeNodes.push(osc);
-      gainNodes.push(gain);
-    }
+    oscNodes.push(osc);
+    gainNodes.push(gain);
   } catch {
     // Ignore audio errors
   }
@@ -134,7 +124,7 @@ export function playThreeSecondBeep(): () => void {
         // Already disconnected
       }
     }
-    for (const osc of activeNodes) {
+    for (const osc of oscNodes) {
       try {
         osc.stop();
         osc.disconnect();
@@ -146,7 +136,7 @@ export function playThreeSecondBeep(): () => void {
 }
 
 /**
- * Friendly ascending chime when items are ready at the receiving bin.
+ * Subtle ascending confirmation chime when items reach the receiving bin.
  */
 export function playClaimChime(): void {
   const ctx = getAudioContext();
@@ -154,9 +144,7 @@ export function playClaimChime(): void {
 
   try {
     const now = ctx.currentTime;
-    const notes = [587.33, 880, 1174.66]; // D5 -> A5 -> D6
-
-    notes.forEach((freq, idx) => {
+    [659.25, 880].forEach((freq, idx) => {
       const t = now + idx * 0.09;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -165,14 +153,14 @@ export function playClaimChime(): void {
       osc.frequency.setValueAtTime(freq, t);
 
       gain.gain.setValueAtTime(0.001, t);
-      gain.gain.linearRampToValueAtTime(0.14, t + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+      gain.gain.linearRampToValueAtTime(0.1, t + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.24);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
 
       osc.start(t);
-      osc.stop(t + 0.3);
+      osc.stop(t + 0.26);
     });
   } catch {
     // Ignore audio errors
@@ -180,7 +168,7 @@ export function playClaimChime(): void {
 }
 
 /**
- * Crisp two-note confirmation chime for "Restock All".
+ * Quiet two-note confirmation tone when Restock completes.
  */
 export function playRestockChime(): void {
   const ctx = getAudioContext();
@@ -188,8 +176,8 @@ export function playRestockChime(): void {
 
   try {
     const now = ctx.currentTime;
-    [659.25, 987.77].forEach((freq, idx) => {
-      const t = now + idx * 0.08;
+    [587.33, 783.99].forEach((freq, idx) => {
+      const t = now + idx * 0.07;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
@@ -197,14 +185,14 @@ export function playRestockChime(): void {
       osc.frequency.setValueAtTime(freq, t);
 
       gain.gain.setValueAtTime(0.001, t);
-      gain.gain.linearRampToValueAtTime(0.13, t + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+      gain.gain.linearRampToValueAtTime(0.09, t + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
 
       osc.start(t);
-      osc.stop(t + 0.22);
+      osc.stop(t + 0.18);
     });
   } catch {
     // Ignore audio errors

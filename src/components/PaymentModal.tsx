@@ -1,6 +1,13 @@
-import { Banknote, CheckCircle2, Coins, X } from 'lucide-react';
-import type { CartItem } from '../types/kiosk';
-import { formatPHP } from '../data/initialSlots';
+import NumberFlow from '@number-flow/react';
+import { motion } from 'motion/react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import type { CartItem } from '@/types/kiosk';
 
 interface PaymentModalProps {
   cartItems: CartItem[];
@@ -15,92 +22,53 @@ export function PaymentModal({
   onDonePaying,
   onCancel,
 }: PaymentModalProps) {
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="payment-modal-title"
-      className="fixed inset-0 z-50 bg-slate-900/65 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
-    >
-      <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-8 flex flex-col items-center gap-5 max-h-[92dvh] overflow-y-auto">
-        {/* Animated Cash / Peso Icon */}
-        <div className="relative flex items-center justify-center">
-          <div className="w-20 h-20 rounded-full bg-amber-50 border-2 border-amber-400 flex items-center justify-center animate-cash-bob shadow-sm">
-            <Banknote className="w-10 h-10 text-amber-600" />
-          </div>
-          <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center shadow">
-            <Coins className="w-4 h-4" />
-          </div>
-        </div>
+  const summaryLine = cartItems
+    .map(({ slot, quantity }) => `${slot.name} ×${quantity}`)
+    .join(', ');
 
-        {/* Heading */}
-        <div className="text-center">
-          <h2
-            id="payment-modal-title"
-            className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight"
-          >
-            Please Insert Cash
-          </h2>
-          <p className="text-sm sm:text-base text-slate-600 font-medium mt-1">
-            Insert bills or coins into the acceptor, then tap{' '}
-            <span className="font-bold text-emerald-700">Done Paying</span>.
+  return (
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) onCancel();
+      }}
+    >
+      <DialogContent className="sm:max-w-md text-center gap-6">
+        <DialogHeader className="items-center space-y-2">
+          <DialogTitle className="text-xl sm:text-2xl font-semibold text-zinc-900">
+            Insert Cash
+          </DialogTitle>
+          <DialogDescription className="text-sm text-zinc-500">
+            {summaryLine}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="py-2">
+          <p className="text-5xl sm:text-6xl font-semibold tracking-tight text-zinc-900 tabular-nums">
+            <NumberFlow value={totalAmount} prefix="₱" />
           </p>
         </div>
 
-        {/* Order Breakdown */}
-        <div className="w-full bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-2.5 max-h-48 overflow-y-auto">
-          {cartItems.map(({ slot, quantity, subtotal }) => (
-            <div
-              key={slot.slot_code}
-              className="flex items-center justify-between gap-3 text-sm sm:text-base"
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-slate-900 text-white shrink-0">
-                  {slot.slot_code}
-                </span>
-                <span className="font-semibold text-slate-800 truncate">{slot.name}</span>
-                <span className="font-mono text-xs sm:text-sm font-bold text-teal-700 shrink-0">
-                  ×{quantity}
-                </span>
-              </div>
-              <span className="font-mono font-bold text-slate-900 shrink-0">
-                {formatPHP(subtotal)}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Highlighted Total Due Box */}
-        <div className="w-full rounded-2xl bg-amber-50 border-2 border-amber-500 px-5 py-4 flex items-center justify-between gap-4">
-          <span className="text-base sm:text-lg font-bold text-amber-900">
-            Insert Cash Total
-          </span>
-          <span className="font-mono text-3xl sm:text-4xl font-extrabold text-amber-600 tracking-tight">
-            {formatPHP(totalAmount)}
-          </span>
-        </div>
-
-        {/* Prototype Action Buttons */}
-        <div className="w-full flex flex-col gap-2.5 pt-1">
-          <button
+        <div className="flex flex-col gap-2">
+          <motion.button
             type="button"
+            whileTap={{ scale: 0.95 }}
             onClick={onDonePaying}
-            className="w-full min-h-[58px] rounded-2xl bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 active:scale-95 transition-transform duration-100 text-white font-extrabold text-lg sm:text-xl flex items-center justify-center gap-2.5 shadow-md"
+            className="w-full h-12 rounded-full bg-zinc-900 text-white text-base font-medium hover:bg-zinc-800 transition-colors"
           >
-            <CheckCircle2 className="w-6 h-6" />
-            <span>Done Paying</span>
-          </button>
+            Done Paying
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
+            whileTap={{ scale: 0.95 }}
             onClick={onCancel}
-            className="w-full min-h-[48px] rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition-transform duration-100 text-slate-700 font-bold text-sm sm:text-base flex items-center justify-center gap-1.5"
+            className="w-full h-11 rounded-full text-sm font-medium text-zinc-500 hover:text-zinc-900 hover:bg-stone-100 transition-colors"
           >
-            <X className="w-4 h-4" />
-            <span>Cancel / Go Back</span>
-          </button>
+            Back
+          </motion.button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
