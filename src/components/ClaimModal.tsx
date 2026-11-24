@@ -21,7 +21,10 @@ interface ClaimModalProps {
 export function ClaimModal({ dispensedItems, onClose }: ClaimModalProps) {
   const closedRef = useRef(false);
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     playClaimChime();
