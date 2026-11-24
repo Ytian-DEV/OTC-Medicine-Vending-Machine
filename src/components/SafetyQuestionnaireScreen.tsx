@@ -17,6 +17,16 @@ interface SafetyQuestionnaireScreenProps {
   onBrowseAll: () => void;
 }
 
+const SYMPTOM_PILL_STYLES: Record<SymptomId, string> = {
+  'headache-fever': 'bg-orange-50 text-orange-700 border-orange-200/80',
+  'cold-nose': 'bg-teal-50 text-teal-700 border-teal-200/80',
+  cough: 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
+  diarrhea: 'bg-sky-50 text-sky-700 border-sky-200/80',
+  allergies: 'bg-indigo-50 text-indigo-700 border-indigo-200/80',
+  'cut-scrape': 'bg-amber-50 text-amber-700 border-amber-200/80',
+  menstrual: 'bg-rose-50 text-rose-700 border-rose-200/80',
+};
+
 export function SafetyQuestionnaireScreen({
   symptom,
   question,
@@ -123,10 +133,15 @@ export function SafetyQuestionnaireScreen({
           transition={{ duration: 0.2 }}
           className="rounded-3xl bg-white border border-stone-200/80 p-6 sm:p-9 shadow-sm flex flex-col gap-6"
         >
-          <div className="space-y-2 text-center">
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+          <div className="space-y-2.5 text-center flex flex-col items-center">
+            <span
+              className={cn(
+                'inline-flex items-center px-3 py-1 rounded-full border text-xs font-semibold',
+                SYMPTOM_PILL_STYLES[symptom]
+              )}
+            >
               {symptomMeta?.label}
-            </p>
+            </span>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight text-zinc-900 leading-snug">
               {question.prompt}
             </h2>
