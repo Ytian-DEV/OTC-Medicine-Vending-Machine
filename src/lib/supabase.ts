@@ -1,6 +1,6 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { INITIAL_SLOTS } from '@/data/initialSlots';
-import type { CartItem, SlotItem, TransactionLineItem } from '@/types/kiosk';
+import { INITIAL_SLOTS, INITIAL_SLOTS_BY_CODE } from '@/data/initialSlots';
+import type { CartItem, SlotCategory, SlotItem, TransactionLineItem } from '@/types/kiosk';
 
 const LOCAL_SLOTS_KEY = 'vending_kiosk_slots_v2';
 const LOCAL_TXNS_KEY = 'vending_kiosk_transactions_v2';
@@ -21,15 +21,23 @@ if (supabaseUrl && supabaseAnonKey) {
 export const isSupabaseConfigured = Boolean(supabase);
 
 function normalizeSlot(row: Record<string, unknown>): SlotItem {
+  const slotCode = String(row.slot_code);
+  const fallback = INITIAL_SLOTS_BY_CODE[slotCode];
+
   return {
-    id: String(row.id ?? row.slot_code),
-    slot_code: String(row.slot_code),
-    name: String(row.name),
-    price: Number(row.price ?? 0),
+    id: String(row.id ?? slotCode),
+    slot_code: slotCode,
+    name: String(row.name ?? fallback?.name ?? slotCode),
+    category: (row.category as SlotCategory) ?? fallback?.category ?? 'medicine',
+    ingredients: String(row.ingredients ?? fallback?.ingredients ?? ''),
+    usageInstruction: String(
+      row.usage_instruction ?? row.usageInstruction ?? fallback?.usageInstruction ?? ''
+    ),
+    price: Number(row.price ?? fallback?.price ?? 0),
     stock: Math.max(0, Number(row.stock ?? 0)),
-    default_stock: Math.max(0, Number(row.default_stock ?? 10)),
-    image_url: String(row.image_url ?? ''),
-    sort_order: Number(row.sort_order ?? 1),
+    default_stock: Math.max(0, Number(row.default_stock ?? fallback?.default_stock ?? 10)),
+    image_url: String(row.image_url ?? fallback?.image_url ?? ''),
+    sort_order: Number(row.sort_order ?? fallback?.sort_order ?? 1),
     updated_at: row.updated_at ? String(row.updated_at) : undefined,
   };
 }
@@ -38,9 +46,9 @@ function readLocalSlots(): SlotItem[] {
   try {
     const raw = window.localStorage.getItem(LOCAL_SLOTS_KEY);
     if (!raw) return INITIAL_SLOTS;
-    const parsed = JSON.parse(raw) as SlotItem[];
+    const parsed = JSON.parse(raw) as Record<string, unknown>[];
     if (!Array.isArray(parsed) || parsed.length === 0) return INITIAL_SLOTS;
-    return parsed.sort((a, b) => a.sort_order - b.sort_order);
+    return parsed.map(normalizeSlot).sort((a, b) => a.sort_order - b.sort_order);
   } catch {
     return INITIAL_SLOTS;
   }
