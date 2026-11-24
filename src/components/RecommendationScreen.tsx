@@ -55,9 +55,9 @@ function RecommendedItemCard({ slot }: { slot: SlotItem }) {
                 className={cn(
                   'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium tabular-nums',
                   isSoldOut
-                    ? 'bg-red-50 text-red-600'
+                    ? 'bg-red-600 text-white'
                     : slot.stock <= 3
-                      ? 'bg-amber-50 text-amber-700'
+                      ? 'bg-amber-500 text-white'
                       : 'bg-stone-100 text-zinc-600'
                 )}
               >
@@ -118,7 +118,7 @@ export function RecommendationScreen({
       <div className="shrink-0 text-center space-y-2 flex flex-col items-center">
         <span
           className={cn(
-            'inline-flex items-center px-3 py-1 rounded-full border text-xs font-semibold',
+            'inline-flex items-center px-3.5 py-1 rounded-full text-xs font-semibold',
             SYMPTOM_PILL_STYLES[symptom]
           )}
         >
