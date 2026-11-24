@@ -113,7 +113,7 @@ export function SymptomCheckScreen({
               whileTap={{ scale: 0.97 }}
               onClick={() => onSelectSymptom(option.id)}
               className={cn(
-                'group rounded-2xl bg-white border border-stone-200/80 shadow-2xs hover:shadow-md p-4 sm:p-5 flex flex-col justify-between text-left transition-all duration-150 min-h-0 min-w-0',
+                'group rounded-2xl bg-white border border-stone-200/80 shadow-sm hover:shadow-md p-4 sm:p-5 flex flex-col justify-between text-left transition-all duration-150 min-h-0 min-w-0',
                 theme.hoverCard
               )}
             >

@@ -190,7 +190,7 @@ export default function App() {
 
   const handleStartOver = useCallback(() => {
     playClearBeep();
-    resetToSymptomCheck(false);
+    resetToSymptomCheck(true);
   }, [resetToSymptomCheck]);
 
   // Step 3 -> Proceed directly to Payment with recommended item(s)
@@ -285,7 +285,10 @@ export default function App() {
 
   const handleCancelPayment = useCallback(() => {
     setStage('idle');
-  }, []);
+    if (view === 'recommendation') {
+      setQuantities({});
+    }
+  }, [view]);
 
   const handleDonePaying = useCallback(() => {
     const snapshot = cartItems;

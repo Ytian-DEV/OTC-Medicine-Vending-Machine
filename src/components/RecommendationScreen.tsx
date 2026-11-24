@@ -3,7 +3,7 @@ import { ArrowRight, Info, LayoutGrid, RotateCcw } from 'lucide-react';
 import NumberFlow from '@number-flow/react';
 import { motion } from 'motion/react';
 import { formatPHP, getFallbackProductImage } from '@/data/initialSlots';
-import { SYMPTOM_OPTIONS } from '@/data/symptomFlow';
+import { SYMPTOM_OPTIONS, SYMPTOM_PILL_STYLES } from '@/data/symptomFlow';
 import type { SlotItem, SymptomId } from '@/types/kiosk';
 import { cn } from '@/lib/utils';
 
@@ -115,10 +115,15 @@ export function RecommendationScreen({
   return (
     <div className="flex-1 min-h-0 flex flex-col justify-between gap-4 max-w-4xl w-full mx-auto py-1 sm:py-2">
       {/* Header */}
-      <div className="shrink-0 text-center space-y-1">
-        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+      <div className="shrink-0 text-center space-y-2 flex flex-col items-center">
+        <span
+          className={cn(
+            'inline-flex items-center px-3 py-1 rounded-full border text-xs font-semibold',
+            SYMPTOM_PILL_STYLES[symptom]
+          )}
+        >
           {symptomMeta?.label}
-        </p>
+        </span>
         <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-900">
           {allSoldOut ? 'Recommended Item Out of Stock' : 'Recommended for You'}
         </h2>

@@ -100,19 +100,9 @@ export function SlotCard({
         className="relative h-full w-full"
       >
         {/* FRONT FACE */}
-        <div
-          role="button"
-          tabIndex={isSoldOut || isFlipped ? -1 : 0}
-          aria-disabled={isSoldOut}
-          aria-pressed={isSelected}
+        <article
           aria-hidden={isFlipped}
           onClick={handleCardTap}
-          onKeyDown={(e) => {
-            if (!isFlipped && (e.key === 'Enter' || e.key === ' ') && canIncrement) {
-              e.preventDefault();
-              onIncrement(slot.slot_code);
-            }
-          }}
           style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
           className={cn(
             cardSurfaceClasses,
@@ -192,20 +182,12 @@ export function SlotCard({
               </button>
             </div>
           )}
-        </div>
+        </article>
 
         {/* BACK FACE — Ingredients & Short Usage */}
-        <div
-          role="button"
-          tabIndex={isFlipped ? 0 : -1}
+        <article
           aria-hidden={!isFlipped}
           onClick={handleFlipToFront}
-          onKeyDown={(e) => {
-            if (isFlipped && (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape')) {
-              e.preventDefault();
-              handleFlipToFront();
-            }
-          }}
           style={{
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
@@ -259,7 +241,7 @@ export function SlotCard({
               </p>
             </div>
           </div>
-        </div>
+        </article>
       </motion.div>
     </div>
   );

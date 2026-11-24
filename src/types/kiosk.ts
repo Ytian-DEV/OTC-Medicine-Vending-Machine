@@ -1,7 +1,5 @@
 export type SlotCategory = 'medicine' | 'first-aid' | 'menstrual';
 
-export type ConnectionStatus = 'connected' | 'offline' | 'loading';
-
 export interface SlotItem {
   id: string;
   slot_code: string;
