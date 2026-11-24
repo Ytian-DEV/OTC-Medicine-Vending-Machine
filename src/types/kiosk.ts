@@ -1,4 +1,4 @@
-export type SlotCategory = 'First Aid' | 'Medicine' | 'Hygiene';
+export type SlotCategory = 'medicine' | 'first-aid' | 'menstrual';
 
 export type ConnectionStatus = 'connected' | 'offline' | 'loading';
 
@@ -6,8 +6,9 @@ export interface SlotItem {
   id: string;
   slot_code: string;
   name: string;
-  category?: SlotCategory;
-  unit_label?: string;
+  category: SlotCategory;
+  ingredients: string;
+  usageInstruction: string;
   price: number;
   stock: number;
   default_stock: number;
@@ -23,6 +24,28 @@ export interface CartItem {
 }
 
 export type CheckoutStage = 'idle' | 'payment' | 'dispensing' | 'claim';
+
+export type KioskView = 'symptom-check' | 'questionnaire' | 'recommendation' | 'grid';
+
+export type SymptomId =
+  | 'headache-fever'
+  | 'cold-nose'
+  | 'cough'
+  | 'diarrhea'
+  | 'allergies'
+  | 'cut-scrape'
+  | 'menstrual';
+
+export interface SafetyAlertInfo {
+  urgent?: boolean;
+  title: string;
+  message: string;
+}
+
+export interface RecommendationResult {
+  slotCodes: string[];
+  cautionNote?: string;
+}
 
 export interface TransactionLineItem {
   slot_code: string;

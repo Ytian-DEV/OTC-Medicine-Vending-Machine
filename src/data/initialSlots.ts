@@ -3,7 +3,7 @@ import type { SlotItem } from '@/types/kiosk';
 const encodeSvg = (svg: string): string =>
   `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 
-// Rich, studio-styled colorful product illustrations shown until custom photos are dropped into /public/images/products/
+// Rich, studio-styled colorful product illustrations shown if a photo is unavailable
 export const PRODUCT_FALLBACK_IMAGES: Record<string, string> = {
   A1: encodeSvg(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140" fill="none">
@@ -37,13 +37,9 @@ export const PRODUCT_FALLBACK_IMAGES: Record<string, string> = {
       <rect x="38" y="20" width="84" height="94" rx="14" fill="url(#cet)" stroke="#38BDF8" stroke-width="2"/>
       <rect x="44" y="26" width="72" height="12" rx="4" fill="#0284C7" fill-opacity="0.16"/>
       <circle cx="62" cy="56" r="13" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/>
-      <path d="M56 50C59 47 64 47 67 49" stroke="#BAE6FD" stroke-width="2.5" stroke-linecap="round"/>
       <circle cx="98" cy="56" r="13" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/>
-      <path d="M92 50C95 47 100 47 103 49" stroke="#BAE6FD" stroke-width="2.5" stroke-linecap="round"/>
       <circle cx="62" cy="90" r="13" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/>
-      <path d="M56 84C59 81 64 81 67 83" stroke="#BAE6FD" stroke-width="2.5" stroke-linecap="round"/>
       <circle cx="98" cy="90" r="13" fill="#FFFFFF" stroke="#0284C7" stroke-width="2"/>
-      <path d="M92 84C95 81 100 81 103 83" stroke="#BAE6FD" stroke-width="2.5" stroke-linecap="round"/>
     </svg>`
   ),
   A3: encodeSvg(
@@ -74,8 +70,6 @@ export const PRODUCT_FALLBACK_IMAGES: Record<string, string> = {
         <rect x="24" y="42" width="112" height="52" rx="26" fill="#FFFFFF" stroke="#059669" stroke-width="2.5"/>
         <path d="M80 42H110C124.36 42 136 53.64 136 68C136 82.36 124.36 94 110 94H80V42Z" fill="url(#neo)"/>
         <line x1="80" y1="42" x2="80" y2="94" stroke="#047857" stroke-width="2"/>
-        <path d="M40 53H70" stroke="#D1FAE5" stroke-width="4" stroke-linecap="round"/>
-        <path d="M90 53H114" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="4" stroke-linecap="round"/>
       </g>
     </svg>`
   ),
@@ -92,8 +86,6 @@ export const PRODUCT_FALLBACK_IMAGES: Record<string, string> = {
       <g transform="rotate(-8 80 65)">
         <rect x="34" y="43" width="92" height="44" rx="22" fill="#FFFFFF" stroke="#EA580C" stroke-width="2.5"/>
         <path d="M80 43H104C116.15 43 126 52.85 126 65C126 77.15 116.15 87 104 87H80V43Z" fill="url(#bio)"/>
-        <line x1="80" y1="46" x2="80" y2="84" stroke="#C2410C" stroke-width="2" stroke-dasharray="3 3"/>
-        <path d="M48 53H72" stroke="#FED7AA" stroke-width="3.5" stroke-linecap="round"/>
       </g>
     </svg>`
   ),
@@ -109,7 +101,6 @@ export const PRODUCT_FALLBACK_IMAGES: Record<string, string> = {
       <circle cx="80" cy="68" r="44" fill="#DCFCE7" stroke="#22C55E" stroke-width="2"/>
       <path d="M80 30C103 36 108 62 80 102C52 62 57 36 80 30Z" fill="url(#asc)" stroke="#166534" stroke-width="2"/>
       <path d="M80 40V96" stroke="#DCFCE7" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M80 58L91 49M80 72L68 62M80 78L92 69" stroke="#DCFCE7" stroke-width="2" stroke-linecap="round"/>
     </svg>`
   ),
   C1: encodeSvg(
@@ -124,8 +115,6 @@ export const PRODUCT_FALLBACK_IMAGES: Record<string, string> = {
       <g transform="rotate(10 80 68)">
         <rect x="26" y="44" width="108" height="48" rx="24" fill="#FFFFFF" stroke="#0284C7" stroke-width="2.5"/>
         <path d="M80 44H110C123.25 44 134 54.75 134 68C134 81.25 123.25 92 110 92H80V44Z" fill="url(#dia)"/>
-        <path d="M42 54H72" stroke="#E0F2FE" stroke-width="4" stroke-linecap="round"/>
-        <path d="M90 54H116" stroke="#FFFFFF" stroke-opacity="0.45" stroke-width="4" stroke-linecap="round"/>
       </g>
     </svg>`
   ),
@@ -140,7 +129,6 @@ export const PRODUCT_FALLBACK_IMAGES: Record<string, string> = {
       <ellipse cx="80" cy="124" rx="32" ry="6" fill="#000" fill-opacity="0.06"/>
       <rect x="46" y="16" width="68" height="104" rx="34" fill="url(#mod)" stroke="#EC4899" stroke-width="2"/>
       <rect x="60" y="30" width="40" height="76" rx="20" fill="#FFFFFF" stroke="#F472B6" stroke-width="1.75"/>
-      <path d="M72 48C76 54 76 82 72 88M88 48C84 54 84 82 88 88" stroke="#F9A8D4" stroke-width="2" stroke-linecap="round"/>
     </svg>`
   ),
   C3: encodeSvg(
@@ -154,7 +142,6 @@ export const PRODUCT_FALLBACK_IMAGES: Record<string, string> = {
       <ellipse cx="80" cy="126" rx="26" ry="5" fill="#000" fill-opacity="0.06"/>
       <path d="M48 34H112L101 86C99 95 91 102 80 102C69 102 61 95 59 86L48 34Z" fill="url(#cup)" stroke="#E11D48" stroke-width="2"/>
       <ellipse cx="80" cy="34" rx="32" ry="8" fill="#FFE4E6" stroke="#E11D48" stroke-width="2"/>
-      <path d="M62 48L68 82" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="4" stroke-linecap="round"/>
       <rect x="76" y="101" width="8" height="20" rx="4" fill="#FB7185" stroke="#E11D48" stroke-width="1.75"/>
     </svg>`
   ),
@@ -169,6 +156,10 @@ export const INITIAL_SLOTS: SlotItem[] = [
     id: 'local-a1',
     slot_code: 'A1',
     name: 'Band-Aid',
+    category: 'first-aid',
+    ingredients:
+      'Sterile non-stick gauze pad, breathable flexible backing, medical-grade hypoallergenic adhesive',
+    usageInstruction: 'Clean and dry the wound, then apply firmly over the cut.',
     price: 5,
     stock: 15,
     default_stock: 15,
@@ -179,6 +170,9 @@ export const INITIAL_SLOTS: SlotItem[] = [
     id: 'local-a2',
     slot_code: 'A2',
     name: 'Cetirizine',
+    category: 'medicine',
+    ingredients: 'Cetirizine Dihydrochloride 10 mg (Antihistamine)',
+    usageInstruction: 'Take 1 tablet with water once daily. May cause mild drowsiness.',
     price: 15,
     stock: 12,
     default_stock: 12,
@@ -189,6 +183,11 @@ export const INITIAL_SLOTS: SlotItem[] = [
     id: 'local-a3',
     slot_code: 'A3',
     name: 'Reusable Pads',
+    category: 'menstrual',
+    ingredients:
+      'Soft organic cotton/bamboo top layer, absorbent microfiber core, waterproof breathable PUL backing',
+    usageInstruction:
+      'Place soft side up and snap wings under underwear. Wash and air-dry after use.',
     price: 120,
     stock: 8,
     default_stock: 8,
@@ -199,6 +198,10 @@ export const INITIAL_SLOTS: SlotItem[] = [
     id: 'local-b1',
     slot_code: 'B1',
     name: 'Neozep',
+    category: 'medicine',
+    ingredients:
+      'Phenylephrine HCl 10 mg, Chlorphenamine Maleate 2 mg, Paracetamol 500 mg (Forte formulation)',
+    usageInstruction: 'Take 1 tablet with water every 6 hours as needed. May cause drowsiness.',
     price: 9,
     stock: 15,
     default_stock: 15,
@@ -209,6 +212,9 @@ export const INITIAL_SLOTS: SlotItem[] = [
     id: 'local-b2',
     slot_code: 'B2',
     name: 'Biogesic',
+    category: 'medicine',
+    ingredients: 'Paracetamol (Acetaminophen) 500 mg',
+    usageInstruction: 'Take 1 tablet with water every 4–6 hours as needed.',
     price: 6,
     stock: 20,
     default_stock: 20,
@@ -219,6 +225,9 @@ export const INITIAL_SLOTS: SlotItem[] = [
     id: 'local-b3',
     slot_code: 'B3',
     name: 'Ascof Forte',
+    category: 'medicine',
+    ingredients: 'Vitex negundo L. (Lagundi leaf extract) 600 mg',
+    usageInstruction: 'Take 1 tablet with water 3 times a day.',
     price: 9,
     stock: 15,
     default_stock: 15,
@@ -229,6 +238,10 @@ export const INITIAL_SLOTS: SlotItem[] = [
     id: 'local-c1',
     slot_code: 'C1',
     name: 'Diatabs',
+    category: 'medicine',
+    ingredients: 'Loperamide Hydrochloride 2 mg',
+    usageInstruction:
+      'Take 2 capsules initially, then 1 after each loose stool. Drink plenty of water.',
     price: 10,
     stock: 12,
     default_stock: 12,
@@ -239,6 +252,10 @@ export const INITIAL_SLOTS: SlotItem[] = [
     id: 'local-c2',
     slot_code: 'C2',
     name: 'Modess Napkin',
+    category: 'menstrual',
+    ingredients:
+      'Cottony soft non-woven top sheet, cellulose & super-absorbent polymer core, breathable PE backsheet, adhesive strip',
+    usageInstruction: 'Peel off backing and press firmly onto underwear. Change every 4–6 hours.',
     price: 8,
     stock: 15,
     default_stock: 15,
@@ -249,6 +266,10 @@ export const INITIAL_SLOTS: SlotItem[] = [
     id: 'local-c3',
     slot_code: 'C3',
     name: 'Menstrual Cup',
+    category: 'menstrual',
+    ingredients: '100% medical-grade silicone (BPA-free, latex-free)',
+    usageInstruction:
+      'Wash hands and sanitize cup before insertion. Empty and rinse every 8–12 hours.',
     price: 350,
     stock: 5,
     default_stock: 5,
@@ -256,6 +277,10 @@ export const INITIAL_SLOTS: SlotItem[] = [
     sort_order: 9,
   },
 ];
+
+export const INITIAL_SLOTS_BY_CODE: Record<string, SlotItem> = Object.fromEntries(
+  INITIAL_SLOTS.map((slot) => [slot.slot_code, slot])
+);
 
 export function formatPHP(amount: number): string {
   return Number.isInteger(amount) ? `₱${amount}` : `₱${amount.toFixed(2)}`;
