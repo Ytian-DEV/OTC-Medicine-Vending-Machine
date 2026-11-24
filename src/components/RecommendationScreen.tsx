@@ -1,22 +1,39 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowRight, Info, LayoutGrid, RotateCcw } from 'lucide-react';
 import NumberFlow from '@number-flow/react';
 import { motion } from 'motion/react';
 import { formatPHP, getFallbackProductImage } from '@/data/initialSlots';
 import { SYMPTOM_OPTIONS, SYMPTOM_PILL_STYLES } from '@/data/symptomFlow';
+import { QuantityStepper } from '@/components/ui/quantity-stepper';
+import { playClickBeep } from '@/utils/sound';
 import type { SlotItem, SymptomId } from '@/types/kiosk';
 import { cn } from '@/lib/utils';
+
+export interface SelectedRecommendationItem {
+  slot: SlotItem;
+  quantity: number;
+}
 
 interface RecommendationScreenProps {
   symptom: SymptomId;
   recommendedSlots: SlotItem[];
   cautionNote?: string;
-  onProceedToPayment: (inStockSlots: SlotItem[]) => void;
-  onAddAndBrowse: (inStockSlots: SlotItem[]) => void;
+  onProceedToPayment: (items: SelectedRecommendationItem[]) => void;
+  onAddAndBrowse: (items: SelectedRecommendationItem[]) => void;
   onStartOver: () => void;
 }
 
-function RecommendedItemCard({ slot }: { slot: SlotItem }) {
+function RecommendedItemCard({
+  slot,
+  quantity,
+  onIncrement,
+  onDecrement,
+}: {
+  slot: SlotItem;
+  quantity: number;
+  onIncrement: () => void;
+  onDecrement: () => void;
+}) {
   const [imgSrc, setImgSrc] = useState(slot.image_url);
 
   useEffect(() => {
@@ -24,12 +41,17 @@ function RecommendedItemCard({ slot }: { slot: SlotItem }) {
   }, [slot.image_url]);
 
   const isSoldOut = slot.stock <= 0;
+  const isSelected = quantity > 0 && !isSoldOut;
 
   return (
     <div
       className={cn(
-        'rounded-2xl bg-white border p-4 sm:p-5 flex flex-col sm:flex-row items-stretch gap-4 sm:gap-5 shadow-sm min-h-0',
-        isSoldOut ? 'border-stone-200 opacity-85' : 'border-zinc-900/15'
+        'rounded-2xl bg-white border p-4 sm:p-5 flex flex-col sm:flex-row items-stretch gap-4 sm:gap-5 shadow-sm min-h-0 transition-all duration-150',
+        isSoldOut
+          ? 'border-stone-200 opacity-85'
+          : isSelected
+            ? 'border-2 border-zinc-900 ring-4 ring-zinc-900/10'
+            : 'border-stone-200/80'
       )}
     >
       {/* Product Photo */}
@@ -43,8 +65,8 @@ function RecommendedItemCard({ slot }: { slot: SlotItem }) {
         />
       </div>
 
-      {/* Product Details + Ingredients + Usage */}
-      <div className="flex-1 min-w-0 flex flex-col justify-between gap-2.5 text-left">
+      {/* Product Details + Ingredients + Usage + Quantity Stepper */}
+      <div className="flex-1 min-w-0 flex flex-col justify-between gap-3 text-left">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
@@ -94,6 +116,22 @@ function RecommendedItemCard({ slot }: { slot: SlotItem }) {
             </p>
           </div>
         </div>
+
+        {/* Quantity Control Row */}
+        <div className="flex items-center justify-between gap-3 border-t border-stone-100 pt-2.5">
+          <span className="text-xs sm:text-sm font-medium text-zinc-500">
+            Quantity
+          </span>
+
+          <QuantityStepper
+            value={quantity}
+            max={slot.stock}
+            disabled={isSoldOut}
+            label={slot.name}
+            onIncrement={onIncrement}
+            onDecrement={onDecrement}
+          />
+        </div>
       </div>
     </div>
   );
@@ -108,9 +146,68 @@ export function RecommendationScreen({
   onStartOver,
 }: RecommendationScreenProps) {
   const symptomMeta = SYMPTOM_OPTIONS.find((s) => s.id === symptom);
-  const inStockSlots = recommendedSlots.filter((s) => s.stock > 0);
-  const allSoldOut = inStockSlots.length === 0;
-  const totalAmount = inStockSlots.reduce((sum, s) => sum + s.price, 0);
+
+  // Default to 1 for each in-stock recommended item
+  const [itemQuantities, setItemQuantities] = useState<Record<string, number>>(() => {
+    const initial: Record<string, number> = {};
+    for (const slot of recommendedSlots) {
+      initial[slot.slot_code] = slot.stock > 0 ? 1 : 0;
+    }
+    return initial;
+  });
+
+  // Clamp or re-initialize if stock or recommended slots change (e.g., after Restock All)
+  useEffect(() => {
+    setItemQuantities((prev) => {
+      const next: Record<string, number> = {};
+      for (const slot of recommendedSlots) {
+        if (slot.stock <= 0) {
+          next[slot.slot_code] = 0;
+        } else {
+          const existing = prev[slot.slot_code];
+          next[slot.slot_code] =
+            existing === undefined ? 1 : Math.min(slot.stock, Math.max(0, existing));
+        }
+      }
+      return next;
+    });
+  }, [recommendedSlots]);
+
+  const allSoldOut = recommendedSlots.every((s) => s.stock <= 0);
+
+  const selectedItems: SelectedRecommendationItem[] = useMemo(() => {
+    return recommendedSlots
+      .map((slot) => ({
+        slot,
+        quantity: Math.min(slot.stock, itemQuantities[slot.slot_code] ?? 0),
+      }))
+      .filter((entry) => entry.quantity > 0);
+  }, [recommendedSlots, itemQuantities]);
+
+  const totalAmount = useMemo(
+    () => selectedItems.reduce((sum, item) => sum + item.slot.price * item.quantity, 0),
+    [selectedItems]
+  );
+
+  const handleIncrement = (slot: SlotItem) => {
+    setItemQuantities((prev) => {
+      const current = prev[slot.slot_code] ?? 0;
+      if (current >= slot.stock) return prev;
+      playClickBeep(780, 30);
+      return { ...prev, [slot.slot_code]: current + 1 };
+    });
+  };
+
+  const handleDecrement = (slot: SlotItem) => {
+    setItemQuantities((prev) => {
+      const current = prev[slot.slot_code] ?? 0;
+      if (current <= 0) return prev;
+      playClickBeep(620, 30);
+      return { ...prev, [slot.slot_code]: current - 1 };
+    });
+  };
+
+  const canProceed = !allSoldOut && selectedItems.length > 0;
 
   return (
     <div className="flex-1 min-h-0 flex flex-col justify-between gap-4 max-w-4xl w-full mx-auto py-1 sm:py-2">
@@ -138,7 +235,13 @@ export function RecommendationScreen({
           )}
         >
           {recommendedSlots.map((slot) => (
-            <RecommendedItemCard key={slot.slot_code} slot={slot} />
+            <RecommendedItemCard
+              key={slot.slot_code}
+              slot={slot}
+              quantity={itemQuantities[slot.slot_code] ?? 0}
+              onIncrement={() => handleIncrement(slot)}
+              onDecrement={() => handleDecrement(slot)}
+            />
           ))}
         </div>
 
@@ -168,19 +271,24 @@ export function RecommendationScreen({
           <motion.button
             type="button"
             whileTap={{ scale: 0.96 }}
-            onClick={() => onAddAndBrowse(inStockSlots)}
+            onClick={() => onAddAndBrowse(selectedItems)}
             className="w-full sm:w-auto h-11 px-5 rounded-full bg-white border border-stone-200 hover:border-zinc-900 text-zinc-800 text-sm font-medium inline-flex items-center justify-center gap-2 transition-colors"
           >
             <LayoutGrid className="w-4 h-4" />
-            <span>{allSoldOut ? 'Browse All Items' : 'Add & Browse All Items'}</span>
+            <span>
+              {allSoldOut || selectedItems.length === 0
+                ? 'Browse All Items'
+                : 'Add & Browse All Items'}
+            </span>
           </motion.button>
 
           {!allSoldOut && (
             <motion.button
               type="button"
-              whileTap={{ scale: 0.96 }}
-              onClick={() => onProceedToPayment(inStockSlots)}
-              className="w-full sm:w-auto h-11 px-7 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-sm sm:text-base font-medium inline-flex items-center justify-center gap-2 transition-colors"
+              whileTap={canProceed ? { scale: 0.96 } : undefined}
+              disabled={!canProceed}
+              onClick={() => onProceedToPayment(selectedItems)}
+              className="w-full sm:w-auto h-11 px-7 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white text-sm sm:text-base font-medium inline-flex items-center justify-center gap-2 transition-colors disabled:opacity-35 disabled:pointer-events-none"
             >
               <span>Proceed to Payment</span>
               <span className="text-zinc-300 tabular-nums">
