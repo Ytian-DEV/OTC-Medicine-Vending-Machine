@@ -36,30 +36,30 @@ export function SafetyQuestionnaireScreen({
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.2 }}
-          className={cn(
-            'w-full max-w-xl rounded-3xl bg-white border p-7 sm:p-9 text-center flex flex-col items-center gap-5 shadow-sm',
-            safetyAlert.urgent ? 'border-red-300 ring-4 ring-red-500/10' : 'border-amber-300'
-          )}
+          className="w-full max-w-xl rounded-3xl bg-white border border-stone-200/80 p-7 sm:p-9 text-center flex flex-col items-center gap-5 shadow-sm"
         >
           <div
             className={cn(
-              'h-16 w-16 rounded-full flex items-center justify-center border',
-              safetyAlert.urgent
-                ? 'bg-red-50 border-red-200 text-red-600'
-                : 'bg-amber-50 border-amber-200 text-amber-600'
+              'h-16 w-16 rounded-full flex items-center justify-center text-white',
+              safetyAlert.urgent ? 'bg-red-600' : 'bg-amber-500'
             )}
           >
             {safetyAlert.urgent ? (
-              <ShieldAlert className="w-8 h-8 stroke-[1.75]" />
+              <ShieldAlert className="w-8 h-8 stroke-[2]" />
             ) : (
-              <AlertTriangle className="w-8 h-8 stroke-[1.75]" />
+              <AlertTriangle className="w-8 h-8 stroke-[2]" />
             )}
           </div>
 
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+          <div className="space-y-2.5 flex flex-col items-center">
+            <span
+              className={cn(
+                'inline-flex items-center px-3.5 py-1 rounded-full text-xs font-semibold',
+                SYMPTOM_PILL_STYLES[symptom]
+              )}
+            >
               {symptomMeta?.label}
-            </p>
+            </span>
             <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-900">
               {safetyAlert.title}
             </h2>
@@ -127,7 +127,7 @@ export function SafetyQuestionnaireScreen({
           <div className="space-y-2.5 text-center flex flex-col items-center">
             <span
               className={cn(
-                'inline-flex items-center px-3 py-1 rounded-full border text-xs font-semibold',
+                'inline-flex items-center px-3.5 py-1 rounded-full text-xs font-semibold',
                 SYMPTOM_PILL_STYLES[symptom]
               )}
             >

@@ -69,9 +69,9 @@ export function SlotCard({
         className={cn(
           'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] sm:text-xs font-medium tabular-nums',
           isSoldOut
-            ? 'bg-red-50 text-red-600'
+            ? 'bg-red-600 text-white'
             : isLowStock
-              ? 'bg-amber-50 text-amber-700 border border-amber-200/80'
+              ? 'bg-amber-500 text-white'
               : isSelected
                 ? 'bg-zinc-900/10 text-zinc-800 font-semibold'
                 : 'bg-stone-100 text-zinc-500'
