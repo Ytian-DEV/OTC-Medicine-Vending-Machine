@@ -7,7 +7,10 @@ import { DispensingModal } from '@/components/DispensingModal';
 import { ClaimModal } from '@/components/ClaimModal';
 import { SymptomCheckScreen } from '@/components/SymptomCheckScreen';
 import { SafetyQuestionnaireScreen } from '@/components/SafetyQuestionnaireScreen';
-import { RecommendationScreen } from '@/components/RecommendationScreen';
+import {
+  RecommendationScreen,
+  type SelectedRecommendationItem,
+} from '@/components/RecommendationScreen';
 import { INITIAL_SLOTS } from '@/data/initialSlots';
 import { resolveSymptomStep } from '@/data/symptomFlow';
 import {
@@ -193,33 +196,41 @@ export default function App() {
     resetToSymptomCheck(true);
   }, [resetToSymptomCheck]);
 
-  // Step 3 -> Proceed directly to Payment with recommended item(s)
-  const handleRecommendationProceedToPayment = useCallback((inStockSlots: SlotItem[]) => {
-    if (inStockSlots.length === 0) return;
-    playClickBeep(840, 30);
-    const nextQuantities: Record<string, number> = {};
-    for (const item of inStockSlots) {
-      nextQuantities[item.slot_code] = 1;
-    }
-    setQuantities(nextQuantities);
-    setStage('payment');
-  }, []);
-
-  // Step 3 -> Add recommended item(s) to cart & open 3x3 grid
-  const handleRecommendationAddAndBrowse = useCallback((inStockSlots: SlotItem[]) => {
-    playClickBeep(780, 30);
-    if (inStockSlots.length > 0) {
-      setQuantities((prev) => {
-        const next = { ...prev };
-        for (const item of inStockSlots) {
-          const current = next[item.slot_code] ?? 0;
-          next[item.slot_code] = Math.min(item.stock, Math.max(1, current));
+  // Step 3 -> Proceed directly to Payment with chosen recommended quantities
+  const handleRecommendationProceedToPayment = useCallback(
+    (selectedItems: SelectedRecommendationItem[]) => {
+      if (selectedItems.length === 0) return;
+      playClickBeep(840, 30);
+      const nextQuantities: Record<string, number> = {};
+      for (const { slot, quantity } of selectedItems) {
+        if (quantity > 0) {
+          nextQuantities[slot.slot_code] = Math.min(slot.stock, quantity);
         }
-        return next;
-      });
-    }
-    setView('grid');
-  }, []);
+      }
+      setQuantities(nextQuantities);
+      setStage('payment');
+    },
+    []
+  );
+
+  // Step 3 -> Add chosen recommended quantities to cart & open 3x3 grid
+  const handleRecommendationAddAndBrowse = useCallback(
+    (selectedItems: SelectedRecommendationItem[]) => {
+      playClickBeep(780, 30);
+      if (selectedItems.length > 0) {
+        setQuantities((prev) => {
+          const next = { ...prev };
+          for (const { slot, quantity } of selectedItems) {
+            const current = next[slot.slot_code] ?? 0;
+            next[slot.slot_code] = Math.min(slot.stock, Math.max(quantity, current + quantity));
+          }
+          return next;
+        });
+      }
+      setView('grid');
+    },
+    []
+  );
 
   const handleIncrement = useCallback(
     (slotCode: string) => {
