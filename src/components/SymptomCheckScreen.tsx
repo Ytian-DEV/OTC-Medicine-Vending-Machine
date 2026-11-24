@@ -82,20 +82,12 @@ export function SymptomCheckScreen({
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="shrink-0 text-center space-y-2"
+        className="shrink-0 text-center space-y-2 sm:space-y-3"
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-stone-200/90 shadow-2xs text-xs font-medium text-zinc-600">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500" />
-          </span>
-          <span>Guided Quick Check</span>
-        </div>
-
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-zinc-900">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-zinc-900 leading-[1.08]">
           Hello! What are you feeling?
         </h1>
-        <p className="text-sm sm:text-base text-zinc-500">
+        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-zinc-500 font-normal">
           Tap a symptom or need below for a quick recommendation.
         </p>
       </motion.div>
