@@ -22,52 +22,36 @@ interface SymptomCheckScreenProps {
 interface SymptomVisualTheme {
   icon: React.ComponentType<{ className?: string }>;
   iconBox: string;
-  hoverCard: string;
-  arrowColor: string;
 }
 
 const SYMPTOM_THEMES: Record<SymptomId, SymptomVisualTheme> = {
   'headache-fever': {
     icon: Thermometer,
-    iconBox: 'bg-orange-50 text-orange-600 ring-1 ring-orange-200/80',
-    hoverCard: 'hover:border-orange-300 hover:bg-orange-50/25',
-    arrowColor: 'group-hover:text-orange-500',
+    iconBox: 'bg-orange-600 text-white',
   },
   'cold-nose': {
     icon: Wind,
-    iconBox: 'bg-teal-50 text-teal-600 ring-1 ring-teal-200/80',
-    hoverCard: 'hover:border-teal-300 hover:bg-teal-50/25',
-    arrowColor: 'group-hover:text-teal-500',
+    iconBox: 'bg-teal-600 text-white',
   },
   cough: {
     icon: Stethoscope,
-    iconBox: 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/80',
-    hoverCard: 'hover:border-emerald-300 hover:bg-emerald-50/25',
-    arrowColor: 'group-hover:text-emerald-500',
+    iconBox: 'bg-emerald-600 text-white',
   },
   diarrhea: {
     icon: Activity,
-    iconBox: 'bg-sky-50 text-sky-600 ring-1 ring-sky-200/80',
-    hoverCard: 'hover:border-sky-300 hover:bg-sky-50/25',
-    arrowColor: 'group-hover:text-sky-500',
+    iconBox: 'bg-sky-600 text-white',
   },
   allergies: {
     icon: Sparkles,
-    iconBox: 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200/80',
-    hoverCard: 'hover:border-indigo-300 hover:bg-indigo-50/25',
-    arrowColor: 'group-hover:text-indigo-500',
+    iconBox: 'bg-indigo-600 text-white',
   },
   'cut-scrape': {
     icon: Bandage,
-    iconBox: 'bg-amber-50 text-amber-600 ring-1 ring-amber-200/80',
-    hoverCard: 'hover:border-amber-300 hover:bg-amber-50/25',
-    arrowColor: 'group-hover:text-amber-500',
+    iconBox: 'bg-amber-600 text-white',
   },
   menstrual: {
     icon: Droplets,
-    iconBox: 'bg-rose-50 text-rose-600 ring-1 ring-rose-200/80',
-    hoverCard: 'hover:border-rose-300 hover:bg-rose-50/25',
-    arrowColor: 'group-hover:text-rose-500',
+    iconBox: 'bg-rose-600 text-white',
   },
 };
 
@@ -112,10 +96,7 @@ export function SymptomCheckScreen({
               whileHover={{ y: -3 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => onSelectSymptom(option.id)}
-              className={cn(
-                'group rounded-2xl bg-white border border-stone-200/80 shadow-sm hover:shadow-md p-4 sm:p-5 flex flex-col justify-between text-left transition-all duration-150 min-h-0 min-w-0',
-                theme.hoverCard
-              )}
+              className="group rounded-2xl bg-white border border-stone-200/80 hover:border-zinc-900 shadow-sm hover:shadow-md p-4 sm:p-5 flex flex-col justify-between text-left transition-all duration-150 min-h-0 min-w-0"
             >
               <div className="flex items-start justify-between gap-2 w-full">
                 <div
@@ -124,15 +105,10 @@ export function SymptomCheckScreen({
                     theme.iconBox
                   )}
                 >
-                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[1.9]" />
+                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2]" />
                 </div>
 
-                <ArrowRight
-                  className={cn(
-                    'w-4 h-4 sm:w-5 sm:h-5 text-zinc-300 transition-all duration-200 group-hover:translate-x-0.5',
-                    theme.arrowColor
-                  )}
-                />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-300 group-hover:text-zinc-900 transition-all duration-200 group-hover:translate-x-0.5" />
               </div>
 
               <div className="space-y-0.5 sm:space-y-1 min-w-0">
