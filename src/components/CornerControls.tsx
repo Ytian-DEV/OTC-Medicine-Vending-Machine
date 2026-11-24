@@ -36,7 +36,7 @@ export function CornerControls({
           type="button"
           whileTap={{ scale: 0.96 }}
           onClick={onBackToSymptomCheck}
-          className="h-8 px-3 rounded-full bg-white/90 border border-stone-200 hover:border-zinc-900 text-zinc-600 hover:text-zinc-900 text-xs sm:text-sm font-medium inline-flex items-center gap-1.5 transition-colors shadow-2xs"
+          className="h-8 px-3 rounded-full bg-white/90 border border-stone-200 hover:border-zinc-900 text-zinc-600 hover:text-zinc-900 text-xs sm:text-sm font-medium inline-flex items-center gap-1.5 transition-colors shadow-sm"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Symptom Check</span>

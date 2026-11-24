@@ -53,7 +53,7 @@ export function QuantityStepper({
         className={cn(
           'h-9 w-9 sm:h-10 sm:w-10 rounded-full flex items-center justify-center transition-colors',
           canDecrement
-            ? 'bg-white text-zinc-900 border border-stone-200/90 shadow-2xs hover:bg-stone-100'
+            ? 'bg-white text-zinc-900 border border-stone-200/90 shadow-sm hover:bg-stone-100'
             : 'text-zinc-300 cursor-not-allowed'
         )}
       >
@@ -84,7 +84,7 @@ export function QuantityStepper({
           canIncrement
             ? isActive
               ? 'bg-zinc-900 text-white hover:bg-zinc-800'
-              : 'bg-white text-zinc-900 border border-stone-200/90 shadow-2xs hover:bg-zinc-900 hover:text-white hover:border-zinc-900'
+              : 'bg-white text-zinc-900 border border-stone-200/90 shadow-sm hover:bg-zinc-900 hover:text-white hover:border-zinc-900'
             : 'text-zinc-300 cursor-not-allowed'
         )}
       >
